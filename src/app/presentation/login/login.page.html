@@ -1,0 +1,28 @@
+<main class="login">
+  <section class="tarjeta">
+    <h1>Detección de TDAH, TEA y trastornos del aprendizaje</h1>
+    <p class="subtitulo">Inicia sesión para continuar</p>
+
+    <form [formGroup]="form" (ngSubmit)="ingresar()">
+      <label for="correo">Correo</label>
+      <input id="correo" type="email" formControlName="correo" autocomplete="username" />
+      @if (form.controls.correo.touched && form.controls.correo.invalid) {
+        <small class="campo-error">Ingresa un correo válido</small>
+      }
+
+      <label for="contrasena">Contraseña</label>
+      <input id="contrasena" type="password" formControlName="contrasena" autocomplete="current-password" />
+      @if (form.controls.contrasena.touched && form.controls.contrasena.invalid) {
+        <small class="campo-error">Ingresa tu contraseña</small>
+      }
+
+      @if (error()) {
+        <div class="alerta">{{ error() }}</div>
+      }
+
+      <button type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+    </form>
+  </section>
+</main>

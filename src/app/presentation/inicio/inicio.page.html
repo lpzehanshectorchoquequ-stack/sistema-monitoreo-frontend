@@ -1,0 +1,27 @@
+@if (sesion(); as s) {
+  <header class="barra">
+    <strong>Detección TDAH · TEA · Aprendizaje</strong>
+    <div class="usuario">
+      <span>{{ s.nombre }} · {{ s.rol }}</span>
+      <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="contenido">
+    <h2>Bienvenido/a, {{ s.nombre }}</h2>
+    @switch (s.rol) {
+      @case ('Admin') {
+        <p>Panel de administración: aquí se gestionarán los usuarios del sistema.</p>
+      }
+      @case ('Psicologo') {
+        <p>Panel de psicología: aquí se gestionarán tus pacientes y sus evaluaciones.</p>
+      }
+      @case ('Tutor') {
+        <p>Panel del tutor: aquí podrás ver el avance de tu hijo/a.</p>
+      }
+      @default {
+        <p>Tu rol todavía no tiene un panel asignado.</p>
+      }
+    }
+  </main>
+}
