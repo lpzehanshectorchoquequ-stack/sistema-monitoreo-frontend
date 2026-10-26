@@ -1,0 +1,46 @@
+<main class="contenedor">
+  <div class="cabecera-pagina">
+    <h2>Pacientes</h2>
+    <a class="btn btn-primario" routerLink="/pacientes/nuevo">+ Nuevo paciente</a>
+  </div>
+
+  @if (error()) {
+    <div class="alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando pacientes...</p>
+  } @else if (pacientes().length === 0) {
+    <div class="vacio">Aún no hay pacientes registrados.</div>
+  } @else {
+    <div class="tarjeta-blanca">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Tutor</th>
+            <th>Motivo de consulta</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of pacientes(); track p.id) {
+            <tr>
+              <td>{{ p.nombre }}</td>
+              <td>{{ edad(p.fechaNacimiento) }} años</td>
+              <td>{{ p.tutorNombre }}</td>
+              <td>{{ p.motivoConsulta }}</td>
+              <td class="acciones">
+                <a class="btn btn-primario" routerLink="/evaluaciones" [queryParams]="{ paciente: p.id }">Evaluar</a>
+                <a class="btn btn-secundario" [routerLink]="['/pacientes', p.id, 'historial']">Historial</a>
+                <a class="btn btn-secundario" [routerLink]="['/pacientes', p.id, 'editar']">Editar</a>
+                <button type="button" class="btn btn-peligro" (click)="eliminar(p)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</main>

@@ -1,31 +1,127 @@
+:host {
+  display: block;
+}
+
 .login {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
   min-height: 100vh;
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.panel-ilustracion {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(150deg, #7c5cff 0%, #4b34c9 55%, #2bb5d8 130%);
+}
+
+.marca {
+  position: absolute;
+  top: 1.6rem;
+  left: 2rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.marca-icono {
+  display: inline-block;
+  animation: balanceo 3s ease-in-out infinite;
+}
+
+.ilustracion {
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.2));
+}
+
+h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.7rem;
+}
+
+.panel-ilustracion p {
+  max-width: 420px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.flota {
+  animation: flotar 4s ease-in-out infinite;
+}
+
+.flota.lenta {
+  animation-duration: 7s;
+}
+
+.burbuja {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  animation: flotar 6s ease-in-out infinite;
+}
+
+.b1 {
+  top: 8%;
+  right: 10%;
+  width: 90px;
+  height: 90px;
+}
+
+.b2 {
+  bottom: 12%;
+  left: 6%;
+  width: 140px;
+  height: 140px;
+  animation-delay: -2s;
+}
+
+.b3 {
+  top: 40%;
+  right: 4%;
+  width: 50px;
+  height: 50px;
+  animation-delay: -4s;
+}
+
+.panel-form {
   display: grid;
   place-items: center;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #e0f2f1 0%, #e3f2fd 100%);
-  font-family: system-ui, sans-serif;
+  padding: 2rem;
+  background: #faf9ff;
 }
 
 .tarjeta {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
+  padding: 2.2rem;
   background: #fff;
-  border-radius: 16px;
-  padding: 2.25rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(75, 52, 201, 0.15);
+  animation: entrada 0.6s ease both;
+}
+
+.saludo {
+  font-size: 2.4rem;
+  animation: saludar 2.5s ease-in-out infinite;
+  transform-origin: 70% 70%;
 }
 
 h1 {
-  font-size: 1.35rem;
-  color: #0f4c5c;
-  margin: 0 0 0.25rem;
-  line-height: 1.3;
+  margin: 0.2rem 0 0.2rem;
+  color: #4b34c9;
 }
 
 .subtitulo {
-  color: #607d8b;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.4rem;
+  color: #6b6890;
 }
 
 form {
@@ -35,21 +131,22 @@ form {
 }
 
 label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #37474f;
   margin-top: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2d2a4a;
 }
 
 input {
-  padding: 0.7rem 0.8rem;
-  border: 1px solid #b0bec5;
-  border-radius: 8px;
+  padding: 0.8rem 0.9rem;
+  border: 2px solid #e4defe;
+  border-radius: 14px;
+  font-family: inherit;
   font-size: 1rem;
 
   &:focus {
-    outline: 2px solid #26a69a;
-    border-color: transparent;
+    outline: none;
+    border-color: #7c5cff;
   }
 }
 
@@ -59,29 +156,92 @@ input {
 
 .alerta {
   margin-top: 0.8rem;
-  padding: 0.7rem 0.8rem;
-  background: #ffebee;
+  padding: 0.7rem 0.9rem;
   color: #b71c1c;
-  border-radius: 8px;
+  background: #ffe3e6;
+  border-radius: 12px;
 }
 
 button {
-  margin-top: 1.2rem;
-  padding: 0.8rem;
+  margin-top: 1.3rem;
+  padding: 0.9rem;
   border: 0;
-  border-radius: 8px;
-  background: #00796b;
+  border-radius: 999px;
   color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 800;
+  background: linear-gradient(120deg, #7c5cff, #4b34c9);
   cursor: pointer;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(75, 52, 201, 0.35);
+  }
 
   &:disabled {
     opacity: 0.6;
     cursor: default;
   }
+}
 
-  &:hover:not(:disabled) {
-    background: #00695c;
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes balanceo {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes saludar {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(16deg);
+  }
+  80% {
+    transform: rotate(-10deg);
+  }
+  90% {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 860px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-ilustracion {
+    display: none;
   }
 }

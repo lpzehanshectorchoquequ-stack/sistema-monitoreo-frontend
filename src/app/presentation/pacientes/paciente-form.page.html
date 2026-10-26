@@ -1,0 +1,44 @@
+<div class="contenedor contenedor-angosto">
+  <div class="cabecera-pagina">
+    <h2>{{ id() === null ? 'Nuevo paciente' : 'Editar paciente' }}</h2>
+  </div>
+
+  <form class="tarjeta-blanca formulario" [formGroup]="form" (ngSubmit)="guardar()">
+    <label for="nombre">Nombre completo</label>
+    <input id="nombre" type="text" formControlName="nombre" />
+    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+      <small class="campo-error">Ingresa el nombre del paciente</small>
+    }
+
+    <label for="fechaNacimiento">Fecha de nacimiento</label>
+    <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [max]="hoy" />
+    @if (form.controls.fechaNacimiento.touched && form.controls.fechaNacimiento.invalid) {
+      <small class="campo-error">Ingresa la fecha de nacimiento</small>
+    }
+
+    <label for="tutorId">Tutor</label>
+    <select id="tutorId" formControlName="tutorId">
+      <option [ngValue]="0" disabled>Selecciona un tutor</option>
+      @for (t of tutores(); track t.id) {
+        <option [ngValue]="t.id">{{ t.nombre }} ({{ t.correo }})</option>
+      }
+    </select>
+    @if (form.controls.tutorId.touched && form.controls.tutorId.invalid) {
+      <small class="campo-error">Selecciona un tutor</small>
+    }
+
+    <label for="motivoConsulta">Motivo de consulta</label>
+    <textarea id="motivoConsulta" rows="3" formControlName="motivoConsulta"></textarea>
+
+    @if (error()) {
+      <div class="alerta">{{ error() }}</div>
+    }
+
+    <div class="acciones-form">
+      <a class="btn btn-secundario" routerLink="/pacientes">Cancelar</a>
+      <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,111 @@
+<div class="contenedor">
+  <div class="cabecera-pagina">
+    <h2>🧠 Evaluaciones</h2>
+  </div>
+
+  <ol class="pasos">
+    @for (nombre of nombresPasos; track nombre; let i = $index) {
+      <li class="paso" [class.activo]="paso() === i + 1" [class.hecho]="paso() > i + 1">
+        <span class="num">{{ i + 1 }}</span> {{ nombre }}
+      </li>
+    }
+  </ol>
+
+  @if (error()) {
+    <div class="alerta">{{ error() }}</div>
+  }
+
+  @switch (paso()) {
+    @case (1) {
+      <h3>¿A quién vas a evaluar?</h3>
+      @if (pacientes().length === 0) {
+        <div class="vacio">Aún no tienes pacientes. Registra uno primero en la sección Pacientes.</div>
+      }
+      <div class="rejilla">
+        @for (p of pacientes(); track p.id) {
+          <button type="button" class="opcion-card" (click)="elegirPaciente(p)">
+            <span class="emoji">🧒</span>
+            <strong>{{ p.nombre }}</strong>
+            <small>{{ edad(p.fechaNacimiento) }} años</small>
+          </button>
+        }
+      </div>
+    }
+
+    @case (2) {
+      <h3>Evaluación de {{ paciente()?.nombre }}: elige el instrumento</h3>
+      <div class="rejilla">
+        @for (i of instrumentos(); track i.id) {
+          <button type="button" class="opcion-card" [disabled]="cargando()" (click)="elegirInstrumento(i)">
+            <span class="emoji">📋</span>
+            <strong>{{ i.nombre }}</strong>
+            <small>{{ i.trastorno }} · {{ i.totalPreguntas }} preguntas · responde: {{ i.quienResponde }}</small>
+            @if (i.estadoValidacion === 'BORRADOR') {
+              <span class="etiqueta-borrador">Borrador</span>
+            }
+          </button>
+        }
+      </div>
+      <div class="acciones-form">
+        <button type="button" class="btn btn-secundario" (click)="volver()">Cambiar paciente</button>
+      </div>
+    }
+
+    @case (3) {
+      @if (instrumento(); as inst) {
+        <div class="tarjeta-blanca">
+          <h3>{{ inst.nombre }}</h3>
+          <p class="suave">Paciente: <strong>{{ paciente()?.nombre }}</strong> · Responde: {{ inst.quienResponde }}</p>
+
+          @if (inst.estadoValidacion === 'BORRADOR') {
+            <div class="aviso-borrador">
+              ⚠️ Instrumento en borrador: preguntas y umbrales pendientes de validación clínica. Úsalo solo con datos de prueba.
+            </div>
+          }
+
+          <div class="progreso"><div class="barra" [style.width.%]="porcentaje()"></div></div>
+          <p class="suave">{{ contestadas() }} de {{ total() }} preguntas respondidas</p>
+
+          @for (p of inst.preguntas; track p.id) {
+            <div class="pregunta">
+              <p><span class="nro">{{ p.orden }}</span> {{ p.texto }}</p>
+              <div class="escala">
+                @for (o of opciones; track o.valor) {
+                  <button type="button" [class.sel]="respuestas()[p.id] === o.valor" (click)="responder(p.id, o.valor)">
+                    {{ o.etiqueta }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <label for="obs" class="etiqueta-campo">Observaciones (opcional)</label>
+          <textarea id="obs" rows="3" class="area" (input)="observaciones.set($any($event.target).value)"></textarea>
+
+          <div class="acciones-form">
+            <button type="button" class="btn btn-secundario" (click)="volver()">Atrás</button>
+            <button type="button" class="btn btn-primario" [disabled]="!completo() || cargando()" (click)="enviar()">
+              {{ cargando() ? 'Evaluando...' : 'Evaluar' }}
+            </button>
+          </div>
+        </div>
+      }
+    }
+
+    @case (4) {
+      @if (resultado(); as r) {
+        <div class="tarjeta-blanca">
+          <h3>Resultado de la evaluación</h3>
+          <p class="suave">{{ r.pacienteNombre }} · {{ r.instrumentoNombre }} · {{ r.fecha }}</p>
+          @if (r.conclusion) {
+            <app-resultado [conclusion]="r.conclusion" />
+          }
+          <div class="acciones-form">
+            <a class="btn btn-secundario" [routerLink]="['/pacientes', r.pacienteId, 'historial']">Ver historial</a>
+            <button type="button" class="btn btn-primario" (click)="nueva()">Nueva evaluación</button>
+          </div>
+        </div>
+      }
+    }
+  }
+</div>

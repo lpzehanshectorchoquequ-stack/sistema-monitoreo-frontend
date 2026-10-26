@@ -1,0 +1,50 @@
+<app-fondo />
+<div class="shell">
+  <aside class="lateral">
+    <div class="logo">
+      <span class="logo-icono">🧩</span>
+      <span>PequeMentes</span>
+    </div>
+
+    <nav>
+      @for (item of menu(); track item.etiqueta) {
+        @if (item.ruta) {
+          <a
+            [routerLink]="item.ruta"
+            routerLinkActive="activo"
+            [routerLinkActiveOptions]="{ exact: !!item.exacto }"
+          >
+            <span class="ico">{{ item.icono }}</span>
+            {{ item.etiqueta }}
+          </a>
+        } @else {
+          <span class="deshabilitado">
+            <span class="ico">{{ item.icono }}</span>
+            {{ item.etiqueta }}
+            <small>Pronto</small>
+          </span>
+        }
+      }
+    </nav>
+
+    @if (sesion(); as s) {
+      <div class="usuario-card">
+        <div class="avatar">{{ inicial() }}</div>
+        <div class="datos">
+          <strong>{{ s.nombre }}</strong>
+          <small>{{ s.rol }}</small>
+        </div>  
+        <button type="button" class="salir" (click)="cerrarSesion()" title="Cerrar sesión">⎋</button>
+      </div>
+    }
+  </aside>
+
+  <div class="principal">
+    <header class="superior">
+      <span class="fecha">{{ fecha }}</span>
+    </header>
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+</div>

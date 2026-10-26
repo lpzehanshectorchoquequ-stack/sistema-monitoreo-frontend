@@ -1,27 +1,60 @@
 @if (sesion(); as s) {
-  <header class="barra">
-    <strong>Detección TDAH · TEA · Aprendizaje</strong>
-    <div class="usuario">
-      <span>{{ s.nombre }} · {{ s.rol }}</span>
-      <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+  <section class="hero">
+    <div>
+      <h1>¡Hola, {{ s.nombre }}! </h1>
+      @switch (s.rol) {
+        @case ('Psicologo') {
+          <p>Aquí puedes gestionar a tus pacientes y acompañar su avance.</p>
+        }
+        @case ('Tutor') {
+          <p>Aquí podrás ver el avance de tu hijo/a y comunicarte con su psicóloga.</p>
+        }
+        @default {
+          <p>Panel de administración de PequeMentes.</p>
+        }
+      }
     </div>
-  </header>
+    <div class="hero-emoji">🧩</div>
+  </section>
 
-  <main class="contenido">
-    <h2>Bienvenido/a, {{ s.nombre }}</h2>
+  <div class="tarjetas">
     @switch (s.rol) {
       @case ('Admin') {
-        <p>Panel de administración: aquí se gestionarán los usuarios del sistema.</p>
+        <a class="tarjeta-enlace" routerLink="/pacientes">
+          <div class="icono">🧒</div>
+          <strong>Pacientes</strong>
+          <span>Ver todos los pacientes registrados</span>
+        </a>
       }
       @case ('Psicologo') {
-        <p>Panel de psicología: aquí se gestionarán tus pacientes y sus evaluaciones.</p>
+        <a class="tarjeta-enlace" routerLink="/pacientes">
+          <div class="icono">🧒</div>
+          <strong>Mis pacientes</strong>
+          <span>Registrar, editar y consultar pacientes</span>
+        </a>
+        <div class="tarjeta-enlace pronto">
+          <div class="icono">🧠</div>
+          <strong>Evaluaciones</strong>
+          <span>Aplicar cuestionarios y ver resultados</span>
+        </div>
+        <div class="tarjeta-enlace pronto">
+          <div class="icono">📅</div>
+          <strong>Citas y horarios</strong>
+          <span>Agenda y disponibilidad</span>
+        </div>
       }
       @case ('Tutor') {
-        <p>Panel del tutor: aquí podrás ver el avance de tu hijo/a.</p>
-      }
-      @default {
-        <p>Tu rol todavía no tiene un panel asignado.</p>
+        <div class="tarjeta-enlace pronto">
+          <div class="icono">🧒</div>
+          <strong>Mi hijo/a</strong>
+          <span>Registro y avance</span>
+        </div>
+        <div class="tarjeta-enlace pronto">
+          <div class="icono">📅</div>
+          <strong>Citas</strong>
+          <span>Solicitar y ver citas</span>
+        </div>
       }
     }
-  </main>
+  </div>
 }

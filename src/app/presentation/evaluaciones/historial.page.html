@@ -1,0 +1,36 @@
+<div class="contenedor">
+  <div class="cabecera-pagina">
+    <h2>📈 Historial de {{ paciente()?.nombre }}</h2>
+    @if (paciente(); as p) {
+      <a class="btn btn-primario" routerLink="/evaluaciones" [queryParams]="{ paciente: p.id }">+ Nueva evaluación</a>
+    }
+  </div>
+
+  @if (error()) {
+    <div class="alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando historial...</p>
+  } @else if (lista().length === 0) {
+    <div class="vacio">Este paciente aún no tiene evaluaciones.</div>
+  } @else {
+    @for (e of lista(); track e.id) {
+      <div class="tarjeta-blanca item-historial">
+        <div class="encabezado-item">
+          <strong>{{ e.instrumentoNombre }}</strong>
+          <span class="suave">{{ e.fecha }}</span>
+        </div>
+        @if (e.estadoValidacion === 'BORRADOR') {
+          <span class="etiqueta-borrador">Instrumento en borrador</span>
+        }
+        @if (e.conclusion) {
+          <app-resultado [conclusion]="e.conclusion" />
+        }
+        @if (e.observaciones) {
+          <p class="suave">Observaciones: {{ e.observaciones }}</p>
+        }
+      </div>
+    }
+  }
+</div>
