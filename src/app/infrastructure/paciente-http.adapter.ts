@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Paciente, PacienteDatos, Tutor } from '../domain/paciente.model';
+import { HijoDatos, Paciente, PacienteDatos, Psicologo, Tutor } from '../domain/paciente.model';
 import { PacientePort } from '../domain/paciente.port';
 import { API_URL } from './api.config';
 
@@ -36,5 +36,13 @@ export class PacienteHttpAdapter implements PacientePort {
 
   tutores(): Observable<Tutor[]> {
     return this.http.get<Tutor[]>(`${this.url}/tutores`);
+  }
+
+    registrarHijo(datos: HijoDatos): Observable<Paciente> {
+    return this.http.post<Paciente>(`${this.url}/mis-hijos`, datos);
+  }
+
+  psicologos(): Observable<Psicologo[]> {
+    return this.http.get<Psicologo[]>(`${this.url}/psicologos`);
   }
 }

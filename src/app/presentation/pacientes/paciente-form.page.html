@@ -1,6 +1,6 @@
 <div class="contenedor contenedor-angosto">
   <div class="cabecera-pagina">
-    <h2>{{ id() === null ? 'Nuevo paciente' : 'Editar paciente' }}</h2>
+    <h2>{{ id() === null ? '🧒 Nuevo paciente' : '✏️ Editar paciente' }}</h2>
   </div>
 
   <form class="tarjeta-blanca formulario" [formGroup]="form" (ngSubmit)="guardar()">
@@ -16,6 +16,12 @@
       <small class="campo-error">Ingresa la fecha de nacimiento</small>
     }
 
+    <label>Género</label>
+    <div class="selector-genero">
+      <button type="button" class="gen gen-nino" [class.sel]="form.controls.genero.value === 'NINO'" (click)="elegirGenero('NINO')">👦 Niño</button>
+      <button type="button" class="gen gen-nina" [class.sel]="form.controls.genero.value === 'NINA'" (click)="elegirGenero('NINA')">👧 Niña</button>
+    </div>
+
     <label for="tutorId">Tutor</label>
     <select id="tutorId" formControlName="tutorId">
       <option [ngValue]="0" disabled>Selecciona un tutor</option>
@@ -28,7 +34,13 @@
     }
 
     <label for="motivoConsulta">Motivo de consulta</label>
-    <textarea id="motivoConsulta" rows="3" formControlName="motivoConsulta"></textarea>
+    <textarea id="motivoConsulta" rows="2" formControlName="motivoConsulta"></textarea>
+
+    <label for="fortalezas">⭐ Fortalezas (el tutor lo verá)</label>
+    <textarea id="fortalezas" rows="3" formControlName="fortalezas" placeholder="Ej: muy creativo, aprende rápido con imágenes..."></textarea>
+
+    <label for="dificultades">🌱 Áreas de apoyo (el tutor lo verá)</label>
+    <textarea id="dificultades" rows="3" formControlName="dificultades" placeholder="Ej: le cuesta mantener la atención en tareas largas..."></textarea>
 
     @if (error()) {
       <div class="alerta">{{ error() }}</div>

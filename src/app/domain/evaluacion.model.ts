@@ -47,8 +47,8 @@ export interface EvaluacionDatos {
 }
 
 export const OPCIONES_RESPUESTA = [
-  { valor: 0, etiqueta: 'Nunca' },
-  { valor: 1, etiqueta: 'Algunas veces' },
-  { valor: 2, etiqueta: 'Frecuentemente' },
-  { valor: 3, etiqueta: 'Casi siempre' },
+  { valor: 0, etiqueta: 'Nunca', emoji: '😌' },
+  { valor: 1, etiqueta: 'Algunas veces', emoji: '🙂' },
+  { valor: 2, etiqueta: 'Frecuentemente', emoji: '😮' },
+  { valor: 3, etiqueta: 'Casi siempre', emoji: '😣' },
 ];

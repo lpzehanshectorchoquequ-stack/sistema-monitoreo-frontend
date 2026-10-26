@@ -7,6 +7,22 @@ import { Evaluacion, Instrumento, OPCIONES_RESPUESTA } from '../../domain/evalua
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
 import { ResultadoComponent } from './resultado.component';
 
+const ICONOS: Record<string, string> = { TDAH: '⚡', TEA: '🧩', APRENDIZAJE: '📚' };
+const SUBTITULOS: Record<string, string> = {
+  TDAH: 'Atención y energía',
+  TEA: 'Comunicación y conducta',
+  APRENDIZAJE: 'Lectura, escritura y matemáticas',
+};
+const AREAS: Record<string, string> = {
+  INATENCION: 'Atención',
+  HIPERACTIVIDAD: 'Actividad',
+  SOCIAL: 'Social',
+  REPETITIVO: 'Rutinas',
+  LECTURA: 'Lectura',
+  ESCRITURA: 'Escritura',
+  MATEMATICAS: 'Matemáticas',
+};
+
 @Component({
   selector: 'app-evaluar',
   imports: [ResultadoComponent, RouterLink],
@@ -54,6 +70,26 @@ export class EvaluarPage implements OnInit {
     });
   }
 
+  protected avatar(p: Paciente): string {
+    return p.genero === 'NINA' ? '👧' : p.genero === 'NINO' ? '👦' : '🧒';
+  }
+
+  protected icono(trastorno: string): string {
+    return ICONOS[trastorno] ?? '📋';
+  }
+
+  protected subtitulo(trastorno: string): string {
+    return SUBTITULOS[trastorno] ?? trastorno;
+  }
+
+  protected area(subescala: string): string {
+    return AREAS[subescala] ?? subescala;
+  }
+
+  protected minutos(preguntas: number): number {
+    return Math.max(1, Math.ceil(preguntas / 3));
+  }
+
   protected elegirPaciente(paciente: Paciente): void {
     this.paciente.set(paciente);
     this.paso.set(2);
@@ -79,6 +115,18 @@ export class EvaluarPage implements OnInit {
 
   protected responder(preguntaId: number, valor: number): void {
     this.respuestas.update((actual) => ({ ...actual, [preguntaId]: valor }));
+    const preguntas = this.instrumento()?.preguntas ?? [];
+    const indice = preguntas.findIndex((p) => p.id === preguntaId);
+    const siguiente = preguntas[indice + 1];
+    if (siguiente) {
+      setTimeout(
+        () =>
+          document
+            .getElementById('q-' + siguiente.id)
+            ?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+        250,
+      );
+    }
   }
 
   protected volver(): void {

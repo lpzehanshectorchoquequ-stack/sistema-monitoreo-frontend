@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Paciente, PacienteDatos, Tutor } from './paciente.model';
+import { HijoDatos, Paciente, PacienteDatos, Psicologo, Tutor } from './paciente.model';
 
 export abstract class PacientePort {
   abstract listar(): Observable<Paciente[]>;
@@ -9,4 +9,6 @@ export abstract class PacientePort {
   abstract actualizar(id: number, datos: PacienteDatos): Observable<Paciente>;
   abstract eliminar(id: number): Observable<void>;
   abstract tutores(): Observable<Tutor[]>;
+  abstract registrarHijo(datos: HijoDatos): Observable<Paciente>;
+  abstract psicologos(): Observable<Psicologo[]>;
 }

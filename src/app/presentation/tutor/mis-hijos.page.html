@@ -1,0 +1,67 @@
+<div class="contenedor">
+  <div class="cabecera-pagina">
+    <h2>👨‍👩‍👧 Mi hijo/a</h2>
+    @if (hijos().length > 0) {
+      <a class="btn btn-secundario" routerLink="/mis-hijos/registrar">+ Registrar otro/a hijo/a</a>
+    }
+  </div>
+
+  @if (error()) {
+    <div class="alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (hijos().length === 0) {
+    <div class="hero-vacio">
+      <div class="gran-emoji">🧸</div>
+      <h3>¡Registremos a tu peque!</h3>
+      <p>Cuéntanos sobre tu hijo/a para que su psicóloga pueda acompañarle y tú puedas ver aquí su avance.</p>
+      <a class="btn btn-primario" routerLink="/mis-hijos/registrar">Registrar a mi hijo/a</a>
+    </div>
+  } @else {
+    @if (hijos().length > 1) {
+      <div class="chips-hijos">
+        @for (h of hijos(); track h.id) {
+          <button type="button" [class.sel]="seleccionado()?.id === h.id" (click)="seleccionar(h)">
+            {{ avatar(h) }} {{ h.nombre }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (seleccionado(); as h) {
+      <section class="perfil">
+        <div class="perfil-cabecera">
+          <div class="avatar-grande">{{ avatar(h) }}</div>
+          <div>
+            <h3>{{ h.nombre }}</h3>
+            <p>{{ edad(h.fechaNacimiento) }} años · Psicóloga: <strong>{{ h.psicologoNombre ?? 'Sin asignar' }}</strong></p>
+            @if (h.motivoConsulta) {
+              <p class="suave">Motivo de consulta: {{ h.motivoConsulta }}</p>
+            }
+          </div>
+        </div>
+
+        <div class="cols-2">
+          <div class="card-fort">
+            <h4>⭐ Sus fortalezas</h4>
+            @if (h.fortalezas) {
+              <p>{{ h.fortalezas }}</p>
+            } @else {
+              <p class="suave">Tu psicóloga aún no ha agregado observaciones.</p>
+            }
+          </div>
+          <div class="card-apoyo">
+            <h4>🌱 Áreas en las que podemos apoyarle</h4>
+            @if (h.dificultades) {
+              <p>{{ h.dificultades }}</p>
+            } @else {
+              <p class="suave">Tu psicóloga aún no ha agregado observaciones.</p>
+            }
+          </div>
+        </div>
+      </section>
+    }
+  }
+</div>

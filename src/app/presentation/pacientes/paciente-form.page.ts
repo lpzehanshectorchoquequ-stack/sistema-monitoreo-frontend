@@ -25,8 +25,11 @@ export class PacienteFormPage implements OnInit {
   protected readonly form = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
     fechaNacimiento: ['', Validators.required],
+    genero: [''],
     motivoConsulta: [''],
     tutorId: [0, [Validators.required, Validators.min(1)]],
+    fortalezas: [''],
+    dificultades: [''],
   });
 
   ngOnInit(): void {
@@ -40,12 +43,19 @@ export class PacienteFormPage implements OnInit {
           this.form.patchValue({
             nombre: p.nombre,
             fechaNacimiento: p.fechaNacimiento,
+            genero: p.genero ?? '',
             motivoConsulta: p.motivoConsulta ?? '',
             tutorId: p.tutorId ?? 0,
+            fortalezas: p.fortalezas ?? '',
+            dificultades: p.dificultades ?? '',
           }),
         error: () => this.error.set('No se pudo cargar el paciente'),
       });
     }
+  }
+
+  protected elegirGenero(genero: string): void {
+    this.form.controls.genero.setValue(genero);
   }
 
   protected guardar(): void {

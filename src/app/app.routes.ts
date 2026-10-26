@@ -49,6 +49,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./presentation/pacientes/paciente-form.page').then((m) => m.PacienteFormPage),
       },
+            {
+        path: 'mis-hijos',
+        canActivate: [rolGuard(['Tutor'])],
+        loadComponent: () =>
+          import('./presentation/tutor/mis-hijos.page').then((m) => m.MisHijosPage),
+      },
+      {
+        path: 'mis-hijos/registrar',
+        canActivate: [rolGuard(['Tutor'])],
+        loadComponent: () =>
+          import('./presentation/tutor/registrar-hijo.page').then((m) => m.RegistrarHijoPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

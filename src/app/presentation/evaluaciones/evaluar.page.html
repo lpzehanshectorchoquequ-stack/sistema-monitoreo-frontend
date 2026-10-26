@@ -6,7 +6,7 @@
   <ol class="pasos">
     @for (nombre of nombresPasos; track nombre; let i = $index) {
       <li class="paso" [class.activo]="paso() === i + 1" [class.hecho]="paso() > i + 1">
-        <span class="num">{{ i + 1 }}</span> {{ nombre }}
+        <span class="num">{{ paso() > i + 1 ? '✓' : i + 1 }}</span> {{ nombre }}
       </li>
     }
   </ol>
@@ -17,14 +17,14 @@
 
   @switch (paso()) {
     @case (1) {
-      <h3>¿A quién vas a evaluar?</h3>
+      <h3 class="titulo-paso">👋 ¿A quién vas a evaluar hoy?</h3>
       @if (pacientes().length === 0) {
         <div class="vacio">Aún no tienes pacientes. Registra uno primero en la sección Pacientes.</div>
       }
       <div class="rejilla">
         @for (p of pacientes(); track p.id) {
-          <button type="button" class="opcion-card" (click)="elegirPaciente(p)">
-            <span class="emoji">🧒</span>
+          <button type="button" class="pac" [class]="'g-' + (p.genero ?? 'NEUTRO')" (click)="elegirPaciente(p)">
+            <span class="avatar-pac">{{ avatar(p) }}</span>
             <strong>{{ p.nombre }}</strong>
             <small>{{ edad(p.fechaNacimiento) }} años</small>
           </button>
@@ -33,59 +33,80 @@
     }
 
     @case (2) {
-      <h3>Evaluación de {{ paciente()?.nombre }}: elige el instrumento</h3>
+      <h3 class="titulo-paso">{{ avatar(paciente()!) }} {{ paciente()?.nombre }}: ¿qué quieres explorar?</h3>
       <div class="rejilla">
         @for (i of instrumentos(); track i.id) {
-          <button type="button" class="opcion-card" [disabled]="cargando()" (click)="elegirInstrumento(i)">
-            <span class="emoji">📋</span>
-            <strong>{{ i.nombre }}</strong>
-            <small>{{ i.trastorno }} · {{ i.totalPreguntas }} preguntas · responde: {{ i.quienResponde }}</small>
+          <button type="button" class="instr" [class]="'i-' + i.trastorno" [disabled]="cargando()" (click)="elegirInstrumento(i)">
+            <span class="grande">{{ icono(i.trastorno) }}</span>
+            <strong class="titulo">{{ subtitulo(i.trastorno) }}</strong>
+            <span class="nombre-instr">{{ i.nombre }}</span>
+            <span class="tags">
+              <span>📝 {{ i.totalPreguntas }} preguntas</span>
+              <span>⏱ ~{{ minutos(i.totalPreguntas) }} min</span>
+              <span>👤 {{ i.quienResponde }}</span>
+            </span>
             @if (i.estadoValidacion === 'BORRADOR') {
-              <span class="etiqueta-borrador">Borrador</span>
+              <span class="borrador">Borrador</span>
             }
+            <span class="empezar">Comenzar →</span>
           </button>
         }
       </div>
       <div class="acciones-form">
-        <button type="button" class="btn btn-secundario" (click)="volver()">Cambiar paciente</button>
+        <button type="button" class="btn btn-secundario" (click)="volver()">← Cambiar paciente</button>
       </div>
     }
 
     @case (3) {
       @if (instrumento(); as inst) {
+        <div class="progreso-fijo">
+          <div class="progreso"><div class="barra" [style.width.%]="porcentaje()"></div></div>
+          <span>{{ contestadas() }} de {{ total() }} · {{ porcentaje() }}%</span>
+        </div>
+
         <div class="tarjeta-blanca">
-          <h3>{{ inst.nombre }}</h3>
+          <h3>{{ icono(inst.trastorno) }} {{ inst.nombre }}</h3>
           <p class="suave">Paciente: <strong>{{ paciente()?.nombre }}</strong> · Responde: {{ inst.quienResponde }}</p>
+          <p class="suave">Marca con qué frecuencia ocurre cada situación.</p>
 
           @if (inst.estadoValidacion === 'BORRADOR') {
             <div class="aviso-borrador">
               ⚠️ Instrumento en borrador: preguntas y umbrales pendientes de validación clínica. Úsalo solo con datos de prueba.
             </div>
           }
+        </div>
 
-          <div class="progreso"><div class="barra" [style.width.%]="porcentaje()"></div></div>
-          <p class="suave">{{ contestadas() }} de {{ total() }} preguntas respondidas</p>
-
-          @for (p of inst.preguntas; track p.id) {
-            <div class="pregunta">
-              <p><span class="nro">{{ p.orden }}</span> {{ p.texto }}</p>
-              <div class="escala">
-                @for (o of opciones; track o.valor) {
-                  <button type="button" [class.sel]="respuestas()[p.id] === o.valor" (click)="responder(p.id, o.valor)">
-                    {{ o.etiqueta }}
-                  </button>
-                }
+        @for (p of inst.preguntas; track p.id) {
+          <div class="pcard" [id]="'q-' + p.id" [class.respondida]="respuestas()[p.id] !== undefined">
+            <div class="pcard-cabecera">
+              <span class="pcard-num">{{ respuestas()[p.id] !== undefined ? '✓' : p.orden }}</span>
+              <div>
+                <span class="chip-sub">{{ area(p.subescala) }}</span>
+                <p class="pcard-texto">{{ p.texto }}</p>
               </div>
             </div>
-          }
+            <div class="opciones">
+              @for (o of opciones; track o.valor) {
+                <button type="button" class="op" [class]="'v' + o.valor" [class.sel]="respuestas()[p.id] === o.valor" (click)="responder(p.id, o.valor)">
+                  <span class="emoji">{{ o.emoji }}</span>
+                  {{ o.etiqueta }}
+                </button>
+              }
+            </div>
+          </div>
+        }
 
+        <div class="tarjeta-blanca">
+          @if (completo()) {
+            <div class="listo">🎉 ¡Listo! Ya respondiste todo. Pulsa "Evaluar" para ver el resultado.</div>
+          }
           <label for="obs" class="etiqueta-campo">Observaciones (opcional)</label>
           <textarea id="obs" rows="3" class="area" (input)="observaciones.set($any($event.target).value)"></textarea>
 
           <div class="acciones-form">
-            <button type="button" class="btn btn-secundario" (click)="volver()">Atrás</button>
+            <button type="button" class="btn btn-secundario" (click)="volver()">← Atrás</button>
             <button type="button" class="btn btn-primario" [disabled]="!completo() || cargando()" (click)="enviar()">
-              {{ cargando() ? 'Evaluando...' : 'Evaluar' }}
+              {{ cargando() ? 'Evaluando...' : '✨ Evaluar' }}
             </button>
           </div>
         </div>
@@ -95,7 +116,7 @@
     @case (4) {
       @if (resultado(); as r) {
         <div class="tarjeta-blanca">
-          <h3>Resultado de la evaluación</h3>
+          <h3>🎯 Resultado de la evaluación</h3>
           <p class="suave">{{ r.pacienteNombre }} · {{ r.instrumentoNombre }} · {{ r.fecha }}</p>
           @if (r.conclusion) {
             <app-resultado [conclusion]="r.conclusion" />
