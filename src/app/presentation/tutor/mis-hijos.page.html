@@ -1,67 +1,58 @@
-<div class="contenedor">
-  <div class="cabecera-pagina">
-    <h2>👨‍👩‍👧 Mi hijo/a</h2>
-    @if (hijos().length > 0) {
-      <a class="btn btn-secundario" routerLink="/mis-hijos/registrar">+ Registrar otro/a hijo/a</a>
-    }
-  </div>
-
+<div class="pm-wrap">
   @if (error()) {
-    <div class="alerta">{{ error() }}</div>
+    <div class="pm-alerta">{{ error() }}</div>
   }
 
   @if (cargando()) {
     <p>Cargando...</p>
-  } @else if (hijos().length === 0) {
-    <div class="hero-vacio">
-      <div class="gran-emoji">🧸</div>
-      <h3>¡Registremos a tu peque!</h3>
-      <p>Cuéntanos sobre tu hijo/a para que su psicóloga pueda acompañarle y tú puedas ver aquí su avance.</p>
-      <a class="btn btn-primario" routerLink="/mis-hijos/registrar">Registrar a mi hijo/a</a>
-    </div>
-  } @else {
-    @if (hijos().length > 1) {
-      <div class="chips-hijos">
-        @for (h of hijos(); track h.id) {
-          <button type="button" [class.sel]="seleccionado()?.id === h.id" (click)="seleccionar(h)">
-            {{ avatar(h) }} {{ h.nombre }}
-          </button>
+  } @else if (hijo(); as h) {
+    <section class="pm-banner">
+      <div class="pm-avatar">{{ avatar(h) }}</div>
+      <div class="pm-info">
+        <h1>{{ h.nombre }}</h1>
+        <div class="pm-chips">
+          <span>🎂 {{ edad(h.fechaNacimiento) }} años</span>
+          <span>👩‍⚕️ {{ h.psicologoNombre ?? 'Sin asignar' }}</span>
+        </div>
+        @if (h.motivoConsulta) {
+          <p class="pm-motivo">💬 {{ h.motivoConsulta }}</p>
         }
       </div>
-    }
+    </section>
 
-    @if (seleccionado(); as h) {
-      <section class="perfil">
-        <div class="perfil-cabecera">
-          <div class="avatar-grande">{{ avatar(h) }}</div>
-          <div>
-            <h3>{{ h.nombre }}</h3>
-            <p>{{ edad(h.fechaNacimiento) }} años · Psicóloga: <strong>{{ h.psicologoNombre ?? 'Sin asignar' }}</strong></p>
-            @if (h.motivoConsulta) {
-              <p class="suave">Motivo de consulta: {{ h.motivoConsulta }}</p>
-            }
-          </div>
-        </div>
+    <div class="pm-grid">
+      <article class="pm-card fuerte">
+        <div class="pm-icono">⭐</div>
+        <h3>Sus fortalezas</h3>
+        @if (h.fortalezas) {
+          <p>{{ h.fortalezas }}</p>
+        } @else {
+          <p class="pm-suave">Tu psicóloga aún no ha agregado observaciones. ¡Pronto verás aquí sus fortalezas!</p>
+        }
+      </article>
 
-        <div class="cols-2">
-          <div class="card-fort">
-            <h4>⭐ Sus fortalezas</h4>
-            @if (h.fortalezas) {
-              <p>{{ h.fortalezas }}</p>
-            } @else {
-              <p class="suave">Tu psicóloga aún no ha agregado observaciones.</p>
-            }
-          </div>
-          <div class="card-apoyo">
-            <h4>🌱 Áreas en las que podemos apoyarle</h4>
-            @if (h.dificultades) {
-              <p>{{ h.dificultades }}</p>
-            } @else {
-              <p class="suave">Tu psicóloga aún no ha agregado observaciones.</p>
-            }
-          </div>
-        </div>
-      </section>
-    }
+      <article class="pm-card apoyo">
+        <div class="pm-icono">🌱</div>
+        <h3>Áreas en las que podemos apoyarle</h3>
+        @if (h.dificultades) {
+          <p>{{ h.dificultades }}</p>
+        } @else {
+          <p class="pm-suave">Tu psicóloga aún no ha agregado observaciones.</p>
+        }
+      </article>
+
+      <article class="pm-card pronto">
+        <div class="pm-icono">📅</div>
+        <h3>Citas</h3>
+        <p class="pm-suave">Pronto podrás solicitar citas y ver los horarios disponibles de su psicóloga.</p>
+      </article>
+    </div>
+  } @else {
+    <section class="pm-vacio">
+      <div class="pm-vacio-emoji">🧸</div>
+      <h2>¡Registremos a tu peque!</h2>
+      <p>Cuéntanos sobre tu hijo/a para que su psicóloga pueda acompañarle y tú puedas ver aquí su avance.</p>
+      <a class="pm-boton" routerLink="/mis-hijos/registrar">Registrar a mi hijo/a</a>
+    </section>
   }
 </div>

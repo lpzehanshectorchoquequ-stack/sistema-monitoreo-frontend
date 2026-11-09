@@ -888,4 +888,16 @@ body {
   background: #fff3e0;
   color: #6b3f00;
 }
+body.tema-nino {
+  background: linear-gradient(160deg, #bfe0ff 0%, #e8f4ff 55%, #ffffff 100%);
+}
+
+body.tema-nina {
+  background: linear-gradient(160deg, #ffc6dd 0%, #ffe8f2 55%, #ffffff 100%);
+}
+.contador {
+  align-self: flex-end;
+  font-size: 0.85rem;
+  color: var(--c-suave);
+}
 }

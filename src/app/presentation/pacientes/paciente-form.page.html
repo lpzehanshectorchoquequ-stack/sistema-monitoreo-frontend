@@ -5,16 +5,12 @@
 
   <form class="tarjeta-blanca formulario" [formGroup]="form" (ngSubmit)="guardar()">
     <label for="nombre">Nombre completo</label>
-    <input id="nombre" type="text" formControlName="nombre" />
-    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-      <small class="campo-error">Ingresa el nombre del paciente</small>
-    }
+    <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100" autocomplete="off" />
+    <app-error-campo [control]="form.controls.nombre" />
 
     <label for="fechaNacimiento">Fecha de nacimiento</label>
     <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [max]="hoy" />
-    @if (form.controls.fechaNacimiento.touched && form.controls.fechaNacimiento.invalid) {
-      <small class="campo-error">Ingresa la fecha de nacimiento</small>
-    }
+    <app-error-campo [control]="form.controls.fechaNacimiento" />
 
     <label>Género</label>
     <div class="selector-genero">
@@ -29,18 +25,24 @@
         <option [ngValue]="t.id">{{ t.nombre }} ({{ t.correo }})</option>
       }
     </select>
-    @if (form.controls.tutorId.touched && form.controls.tutorId.invalid) {
-      <small class="campo-error">Selecciona un tutor</small>
-    }
+    <app-error-campo [control]="form.controls.tutorId" />
 
     <label for="motivoConsulta">Motivo de consulta</label>
-    <textarea id="motivoConsulta" rows="2" formControlName="motivoConsulta"></textarea>
+    <textarea id="motivoConsulta" rows="2" formControlName="motivoConsulta" appFiltro="texto" maxlength="500"></textarea>
+    <small class="contador">{{ form.controls.motivoConsulta.value.length }}/500</small>
+    <app-error-campo [control]="form.controls.motivoConsulta" />
 
     <label for="fortalezas">⭐ Fortalezas (el tutor lo verá)</label>
-    <textarea id="fortalezas" rows="3" formControlName="fortalezas" placeholder="Ej: muy creativo, aprende rápido con imágenes..."></textarea>
+    <textarea id="fortalezas" rows="3" formControlName="fortalezas" appFiltro="texto" maxlength="500"
+              placeholder="Ej: muy creativo, aprende rápido con imágenes..."></textarea>
+    <small class="contador">{{ form.controls.fortalezas.value.length }}/500</small>
+    <app-error-campo [control]="form.controls.fortalezas" />
 
     <label for="dificultades">🌱 Áreas de apoyo (el tutor lo verá)</label>
-    <textarea id="dificultades" rows="3" formControlName="dificultades" placeholder="Ej: le cuesta mantener la atención en tareas largas..."></textarea>
+    <textarea id="dificultades" rows="3" formControlName="dificultades" appFiltro="texto" maxlength="500"
+              placeholder="Ej: le cuesta mantener la atención en tareas largas..."></textarea>
+    <small class="contador">{{ form.controls.dificultades.value.length }}/500</small>
+    <app-error-campo [control]="form.controls.dificultades" />
 
     @if (error()) {
       <div class="alerta">{{ error() }}</div>

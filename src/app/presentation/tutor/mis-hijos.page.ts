@@ -8,13 +8,13 @@ import { TemaService } from '../shared/tema.service';
   selector: 'app-mis-hijos',
   imports: [RouterLink],
   templateUrl: './mis-hijos.page.html',
+  styleUrl: './mis-hijos.page.scss',
 })
 export class MisHijosPage implements OnInit {
   private readonly casoUso = inject(GestionarPacientesUseCase);
   private readonly tema = inject(TemaService);
 
-  protected readonly hijos = signal<Paciente[]>([]);
-  protected readonly seleccionado = signal<Paciente | null>(null);
+  protected readonly hijo = signal<Paciente | null>(null);
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly edad = calcularEdad;
@@ -22,9 +22,10 @@ export class MisHijosPage implements OnInit {
   ngOnInit(): void {
     this.casoUso.misHijos().subscribe({
       next: (lista) => {
-        this.hijos.set(lista);
-        if (lista.length > 0) {
-          this.seleccionar(lista[0]);
+        const primero = lista[0] ?? null;
+        this.hijo.set(primero);
+        if (primero) {
+          this.tema.aplicar(primero.genero);
         }
         this.cargando.set(false);
       },
@@ -33,11 +34,6 @@ export class MisHijosPage implements OnInit {
         this.cargando.set(false);
       },
     });
-  }
-
-  protected seleccionar(hijo: Paciente): void {
-    this.seleccionado.set(hijo);
-    this.tema.aplicar(hijo.genero);
   }
 
   protected avatar(hijo: Paciente): string {

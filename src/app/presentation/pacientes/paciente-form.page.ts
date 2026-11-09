@@ -4,10 +4,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Tutor } from '../../domain/paciente.model';
+import { fechaNacimientoValida, nombreValido, textoValido } from '../shared/validadores';
+import { ErrorCampoComponent } from '../shared/error-campo.component';
+import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 
 @Component({
   selector: 'app-paciente-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ErrorCampoComponent, FiltroEntradaDirective],
   templateUrl: './paciente-form.page.html',
 })
 export class PacienteFormPage implements OnInit {
@@ -22,14 +25,14 @@ export class PacienteFormPage implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly hoy = new Date().toISOString().slice(0, 10);
 
-  protected readonly form = this.fb.nonNullable.group({
-    nombre: ['', Validators.required],
-    fechaNacimiento: ['', Validators.required],
+    protected readonly form = this.fb.nonNullable.group({
+    nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
+    fechaNacimiento: ['', [Validators.required, fechaNacimientoValida()]],
     genero: [''],
-    motivoConsulta: [''],
+    motivoConsulta: ['', [textoValido(), Validators.maxLength(500)]],
     tutorId: [0, [Validators.required, Validators.min(1)]],
-    fortalezas: [''],
-    dificultades: [''],
+    fortalezas: ['', [textoValido(), Validators.maxLength(500)]],
+    dificultades: ['', [textoValido(), Validators.maxLength(500)]],
   });
 
   ngOnInit(): void {

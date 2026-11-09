@@ -56,10 +56,12 @@ export class ShellComponent implements OnInit {
     }
   });
 
-  ngOnInit(): void {
-    if (this.sesion()?.rol === 'Tutor') {
+    ngOnInit(): void {
+     if (this.sesion()?.rol === 'Tutor') {
       this.pacientes.misHijos().subscribe((lista) => {
-        if (lista.length > 0) {
+        if (lista.length === 0) {
+          this.router.navigateByUrl('/mis-hijos/registrar');
+        } else {
           this.tema.aplicar(lista[0].genero);
         }
       });

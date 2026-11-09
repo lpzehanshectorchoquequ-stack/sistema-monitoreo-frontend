@@ -32,11 +32,11 @@
           <strong>Mis pacientes</strong>
           <span>Registrar, editar y consultar pacientes</span>
         </a>
-        <div class="tarjeta-enlace pronto">
+          <a class="tarjeta-enlace" routerLink="/evaluaciones">
           <div class="icono">🧠</div>
           <strong>Evaluaciones</strong>
           <span>Aplicar cuestionarios y ver resultados</span>
-        </div>
+        </a>
         <div class="tarjeta-enlace pronto">
           <div class="icono">📅</div>
           <strong>Citas y horarios</strong>
@@ -44,15 +44,15 @@
         </div>
       }
       @case ('Tutor') {
-        <div class="tarjeta-enlace pronto">
+        <a class="tarjeta-enlace" routerLink="/mis-hijos">
           <div class="icono">🧒</div>
           <strong>Mi hijo/a</strong>
-          <span>Registro y avance</span>
-        </div>
+          <span>Su perfil, fortalezas y áreas de apoyo</span>
+        </a>
         <div class="tarjeta-enlace pronto">
           <div class="icono">📅</div>
           <strong>Citas</strong>
-          <span>Solicitar y ver citas</span>
+          <span>Solicitar y ver citas (pronto)</span>
         </div>
       }
     }

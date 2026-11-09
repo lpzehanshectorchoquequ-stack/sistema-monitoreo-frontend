@@ -57,7 +57,7 @@ export class FondoComponent {
     return Array.from({ length: 16 }, (_, i) => ({
       emoji: lista[i % lista.length],
       izq: (i * 37) % 100,
-      tam: 1.6 + (i % 4) * 0.6,
+      tam: 1.6 + (i % 40) * 0.6,
       dur: 16 + ((i * 3) % 12),
       retraso: -(i * 2.7),
     }));

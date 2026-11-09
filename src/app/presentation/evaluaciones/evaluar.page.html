@@ -1,111 +1,121 @@
-<div class="contenedor">
+<div class="pm-eval">
   <div class="cabecera-pagina">
     <h2>🧠 Evaluaciones</h2>
   </div>
 
-  <ol class="pasos">
+  <ol class="pm-pasos">
     @for (nombre of nombresPasos; track nombre; let i = $index) {
-      <li class="paso" [class.activo]="paso() === i + 1" [class.hecho]="paso() > i + 1">
-        <span class="num">{{ paso() > i + 1 ? '✓' : i + 1 }}</span> {{ nombre }}
+      <li class="pm-paso" [class.activo]="paso() === i + 1" [class.hecho]="paso() > i + 1">
+        <span class="n">{{ paso() > i + 1 ? '✓' : i + 1 }}</span> {{ nombre }}
       </li>
     }
   </ol>
 
   @if (error()) {
-    <div class="alerta">{{ error() }}</div>
+    <div class="pm-alerta">{{ error() }}</div>
   }
 
   @switch (paso()) {
     @case (1) {
-      <h3 class="titulo-paso">👋 ¿A quién vas a evaluar hoy?</h3>
+      <h3 class="pm-titulo">👋 ¿A quién vas a evaluar hoy?</h3>
       @if (pacientes().length === 0) {
-        <div class="vacio">Aún no tienes pacientes. Registra uno primero en la sección Pacientes.</div>
+        <div class="pm-alerta">Aún no tienes pacientes. Registra uno primero en la sección Pacientes.</div>
       }
-      <div class="rejilla">
+      <div class="pm-rejilla">
         @for (p of pacientes(); track p.id) {
-          <button type="button" class="pac" [class]="'g-' + (p.genero ?? 'NEUTRO')" (click)="elegirPaciente(p)">
-            <span class="avatar-pac">{{ avatar(p) }}</span>
+          <button type="button" class="pm-pac" [attr.data-genero]="p.genero ?? 'NEUTRO'"
+                  [class.sel]="paciente()?.id === p.id" (click)="elegirPaciente(p)">
+            @if (paciente()?.id === p.id) {
+              <span class="pm-check">✓ Elegido</span>
+            }
+            <span class="pm-pac-avatar">{{ avatar(p) }}</span>
             <strong>{{ p.nombre }}</strong>
-            <small>{{ edad(p.fechaNacimiento) }} años</small>
+            <span class="pm-pac-edad">{{ edad(p.fechaNacimiento) }} años</span>
           </button>
         }
       </div>
     }
 
     @case (2) {
-      <h3 class="titulo-paso">{{ avatar(paciente()!) }} {{ paciente()?.nombre }}: ¿qué quieres explorar?</h3>
-      <div class="rejilla">
+      <h3 class="pm-titulo">{{ avatar(paciente()!) }} {{ paciente()?.nombre }}: ¿qué quieres explorar?</h3>
+      <div class="pm-rejilla pm-rejilla-test">
         @for (i of instrumentos(); track i.id) {
-          <button type="button" class="instr" [class]="'i-' + i.trastorno" [disabled]="cargando()" (click)="elegirInstrumento(i)">
-            <span class="grande">{{ icono(i.trastorno) }}</span>
-            <strong class="titulo">{{ subtitulo(i.trastorno) }}</strong>
-            <span class="nombre-instr">{{ i.nombre }}</span>
-            <span class="tags">
+          <button type="button" class="pm-test" [attr.data-tipo]="i.trastorno"
+                  [class.sel]="elegidoId() === i.id" [disabled]="cargando()" (click)="elegirInstrumento(i)">
+            @if (i.estadoValidacion === 'BORRADOR') {
+              <span class="pm-borrador">Borrador</span>
+            }
+            <span class="pm-test-emoji">{{ icono(i.trastorno) }}</span>
+            <strong class="pm-test-titulo">{{ subtitulo(i.trastorno) }}</strong>
+            <span class="pm-test-nombre">{{ i.nombre }}</span>
+            <span class="pm-test-datos">
               <span>📝 {{ i.totalPreguntas }} preguntas</span>
               <span>⏱ ~{{ minutos(i.totalPreguntas) }} min</span>
               <span>👤 {{ i.quienResponde }}</span>
             </span>
-            @if (i.estadoValidacion === 'BORRADOR') {
-              <span class="borrador">Borrador</span>
-            }
-            <span class="empezar">Comenzar →</span>
+            <span class="pm-test-boton">{{ elegidoId() === i.id ? '✓ Elegido' : 'Comenzar →' }}</span>
           </button>
         }
       </div>
-      <div class="acciones-form">
-        <button type="button" class="btn btn-secundario" (click)="volver()">← Cambiar paciente</button>
+      <div class="pm-acciones">
+        <button type="button" class="pm-btn secundario" (click)="volver()">← Cambiar paciente</button>
       </div>
     }
 
     @case (3) {
       @if (instrumento(); as inst) {
-        <div class="progreso-fijo">
-          <div class="progreso"><div class="barra" [style.width.%]="porcentaje()"></div></div>
+        <div class="pm-progreso">
+          <div class="pm-barra"><div [style.width.%]="porcentaje()"></div></div>
           <span>{{ contestadas() }} de {{ total() }} · {{ porcentaje() }}%</span>
         </div>
 
-        <div class="tarjeta-blanca">
+        <div class="pm-tarjeta">
           <h3>{{ icono(inst.trastorno) }} {{ inst.nombre }}</h3>
-          <p class="suave">Paciente: <strong>{{ paciente()?.nombre }}</strong> · Responde: {{ inst.quienResponde }}</p>
-          <p class="suave">Marca con qué frecuencia ocurre cada situación.</p>
-
+          <p class="pm-suave">Paciente: <strong>{{ paciente()?.nombre }}</strong> · Responde: {{ inst.quienResponde }}</p>
+          <p class="pm-suave">Marca con qué frecuencia ocurre cada situación.</p>
           @if (inst.estadoValidacion === 'BORRADOR') {
-            <div class="aviso-borrador">
+            <div class="pm-aviso">
               ⚠️ Instrumento en borrador: preguntas y umbrales pendientes de validación clínica. Úsalo solo con datos de prueba.
             </div>
           }
         </div>
 
         @for (p of inst.preguntas; track p.id) {
-          <div class="pcard" [id]="'q-' + p.id" [class.respondida]="respuestas()[p.id] !== undefined">
-            <div class="pcard-cabecera">
-              <span class="pcard-num">{{ respuestas()[p.id] !== undefined ? '✓' : p.orden }}</span>
+          <div class="pm-q" [id]="'q-' + p.id" [class.hecha]="respuestas()[p.id] !== undefined">
+            <div class="pm-q-cab">
+              <span class="pm-q-num">{{ respuestas()[p.id] !== undefined ? '✓' : p.orden }}</span>
               <div>
-                <span class="chip-sub">{{ area(p.subescala) }}</span>
-                <p class="pcard-texto">{{ p.texto }}</p>
+                <span class="pm-q-area">{{ area(p.subescala) }}</span>
+                <p class="pm-q-texto">{{ p.texto }}</p>
               </div>
             </div>
-            <div class="opciones">
+            <div class="pm-ops">
               @for (o of opciones; track o.valor) {
-                <button type="button" class="op" [class]="'v' + o.valor" [class.sel]="respuestas()[p.id] === o.valor" (click)="responder(p.id, o.valor)">
-                  <span class="emoji">{{ o.emoji }}</span>
-                  {{ o.etiqueta }}
+                <button type="button" class="pm-op" [attr.data-valor]="o.valor"
+                        [class.sel]="respuestas()[p.id] === o.valor" (click)="responder(p.id, o.valor)">
+                  @if (respuestas()[p.id] === o.valor) {
+                    <span class="pm-op-check">✓</span>
+                  }
+                  <span class="pm-op-emoji">{{ o.emoji }}</span>
+                  <span class="pm-op-texto">{{ o.etiqueta }}</span>
                 </button>
               }
             </div>
           </div>
         }
 
-        <div class="tarjeta-blanca">
+        <div class="pm-tarjeta">
           @if (completo()) {
-            <div class="listo">🎉 ¡Listo! Ya respondiste todo. Pulsa "Evaluar" para ver el resultado.</div>
+            <div class="pm-listo">🎉 ¡Listo! Ya respondiste todo. Pulsa "Evaluar" para ver el resultado.</div>
           }
-          <label for="obs" class="etiqueta-campo">Observaciones (opcional)</label>
-          <textarea id="obs" rows="3" class="area" (input)="observaciones.set($any($event.target).value)"></textarea>
+          <label for="obs" class="pm-label">Observaciones (opcional)</label>
+          <textarea id="obs" rows="3" class="pm-area" appFiltro="texto" maxlength="500"
+                    (input)="observaciones.set($any($event.target).value)"></textarea>
+          <small class="pm-suave">{{ observaciones().length }}/500</small>
 
-          <div class="acciones-form">
-            <button type="button" class="btn btn-secundario" (click)="volver()">← Atrás</button>
-            <button type="button" class="btn btn-primario" [disabled]="!completo() || cargando()" (click)="enviar()">
+          <div class="pm-acciones">
+            <button type="button" class="pm-btn secundario" (click)="volver()">← Atrás</button>
+            <button type="button" class="pm-btn primario" [disabled]="!completo() || cargando()" (click)="enviar()">
               {{ cargando() ? 'Evaluando...' : '✨ Evaluar' }}
             </button>
           </div>
@@ -115,15 +125,15 @@
 
     @case (4) {
       @if (resultado(); as r) {
-        <div class="tarjeta-blanca">
+        <div class="pm-tarjeta">
           <h3>🎯 Resultado de la evaluación</h3>
-          <p class="suave">{{ r.pacienteNombre }} · {{ r.instrumentoNombre }} · {{ r.fecha }}</p>
+          <p class="pm-suave">{{ r.pacienteNombre }} · {{ r.instrumentoNombre }} · {{ r.fecha }}</p>
           @if (r.conclusion) {
             <app-resultado [conclusion]="r.conclusion" />
           }
-          <div class="acciones-form">
-            <a class="btn btn-secundario" [routerLink]="['/pacientes', r.pacienteId, 'historial']">Ver historial</a>
-            <button type="button" class="btn btn-primario" (click)="nueva()">Nueva evaluación</button>
+          <div class="pm-acciones">
+            <a class="pm-btn secundario" [routerLink]="['/pacientes', r.pacienteId, 'historial']">Ver historial</a>
+            <button type="button" class="pm-btn primario" (click)="nueva()">Nueva evaluación</button>
           </div>
         </div>
       }

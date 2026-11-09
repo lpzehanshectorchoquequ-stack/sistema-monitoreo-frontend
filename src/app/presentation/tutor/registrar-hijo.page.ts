@@ -5,11 +5,15 @@ import { Router, RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Psicologo } from '../../domain/paciente.model';
 import { TemaService } from '../shared/tema.service';
+import { fechaNacimientoValida, nombreValido, textoValido } from '../shared/validadores';
+import { ErrorCampoComponent } from '../shared/error-campo.component';
+import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 
 @Component({
   selector: 'app-registrar-hijo',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ErrorCampoComponent, FiltroEntradaDirective],
   templateUrl: './registrar-hijo.page.html',
+  styleUrl: './registrar-hijo.page.scss',
 })
 export class RegistrarHijoPage implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -18,16 +22,17 @@ export class RegistrarHijoPage implements OnInit {
   private readonly tema = inject(TemaService);
 
   protected readonly psicologos = signal<Psicologo[]>([]);
+  protected readonly genero = signal<'' | 'NINO' | 'NINA'>('');
   protected readonly guardando = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly hoy = new Date().toISOString().slice(0, 10);
 
   protected readonly form = this.fb.nonNullable.group({
-    nombre: ['', Validators.required],
-    fechaNacimiento: ['', Validators.required],
+    nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
+    fechaNacimiento: ['', [Validators.required, fechaNacimientoValida()]],
     genero: ['', Validators.required],
     psicologoId: [0, [Validators.required, Validators.min(1)]],
-    motivoConsulta: [''],
+    motivoConsulta: ['', [textoValido(), Validators.maxLength(500)]],
   });
 
   ngOnInit(): void {
@@ -40,6 +45,7 @@ export class RegistrarHijoPage implements OnInit {
   }
 
   protected elegirGenero(genero: 'NINO' | 'NINA'): void {
+    this.genero.set(genero);
     this.form.controls.genero.setValue(genero);
     this.tema.aplicar(genero);
   }

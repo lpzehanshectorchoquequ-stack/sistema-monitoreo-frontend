@@ -42,7 +42,7 @@ export class PacienteHttpAdapter implements PacientePort {
     return this.http.post<Paciente>(`${this.url}/mis-hijos`, datos);
   }
 
-  psicologos(): Observable<Psicologo[]> {
+    psicologos(): Observable<Psicologo[]> {
     return this.http.get<Psicologo[]>(`${this.url}/psicologos`);
   }
 }

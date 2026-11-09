@@ -1,53 +1,74 @@
-<div class="contenedor contenedor-angosto">
-  <div class="cabecera-pagina">
-    <h2>🧸 Registrar a mi hijo/a</h2>
-  </div>
-
-  <form class="tarjeta-blanca formulario" [formGroup]="form" (ngSubmit)="guardar()">
-    <label>¿Es niño o niña?</label>
-    <div class="selector-genero">
-      <button type="button" class="gen gen-nino" [class.sel]="form.controls.genero.value === 'NINO'" (click)="elegirGenero('NINO')">👦 Niño</button>
-      <button type="button" class="gen gen-nina" [class.sel]="form.controls.genero.value === 'NINA'" (click)="elegirGenero('NINA')">👧 Niña</button>
+<div class="pm-registro">
+  <section class="pm-hero">
+    <span class="pm-hero-emoji">{{ genero() === 'NINA' ? '👧' : genero() === 'NINO' ? '👦' : '🧸' }}</span>
+    <div>
+      <h1>¡Bienvenido/a a PequeMentes!</h1>
+      <p>Cuéntanos sobre tu peque para que su psicóloga pueda acompañarle. Solo toma un minuto.</p>
     </div>
-    @if (form.controls.genero.touched && form.controls.genero.invalid) {
-      <small class="campo-error">Elige una opción</small>
-    }
+  </section>
 
-    <label for="nombre">Nombre</label>
-    <input id="nombre" type="text" formControlName="nombre" />
-    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-      <small class="campo-error">Ingresa su nombre</small>
-    }
-
-    <label for="fechaNacimiento">Fecha de nacimiento</label>
-    <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [max]="hoy" />
-    @if (form.controls.fechaNacimiento.touched && form.controls.fechaNacimiento.invalid) {
-      <small class="campo-error">Ingresa su fecha de nacimiento</small>
-    }
-
-    <label for="psicologoId">Psicóloga</label>
-    <select id="psicologoId" formControlName="psicologoId">
-      <option [ngValue]="0" disabled>Selecciona a su psicóloga</option>
-      @for (p of psicologos(); track p.id) {
-        <option [ngValue]="p.id">{{ p.nombre }}</option>
-      }
-    </select>
-    @if (form.controls.psicologoId.touched && form.controls.psicologoId.invalid) {
-      <small class="campo-error">Selecciona una psicóloga</small>
-    }
-
-    <label for="motivoConsulta">¿Qué te preocupa? (opcional)</label>
-    <textarea id="motivoConsulta" rows="3" formControlName="motivoConsulta"></textarea>
-
-    @if (error()) {
-      <div class="alerta">{{ error() }}</div>
-    }
-
-    <div class="acciones-form">
-      <a class="btn btn-secundario" routerLink="/mis-hijos">Cancelar</a>
-      <button type="submit" class="btn btn-primario" [disabled]="guardando()">
-        {{ guardando() ? 'Guardando...' : 'Registrar' }}
+  <form class="pm-form" [formGroup]="form" (ngSubmit)="guardar()">
+    <h3 class="pm-titulo"><span class="pm-n">1</span> ¿Es niño o niña?</h3>
+    <div class="pm-genero">
+      <button type="button" class="pm-gcard nino" [class.sel]="genero() === 'NINO'" (click)="elegirGenero('NINO')">
+        <span class="pm-gemoji">👦</span>
+        <strong>Niño</strong>
+        <small>Tema celeste con autitos 🚗</small>
+        @if (genero() === 'NINO') {
+          <span class="pm-ok">✓</span>
+        }
+      </button>
+      <button type="button" class="pm-gcard nina" [class.sel]="genero() === 'NINA'" (click)="elegirGenero('NINA')">
+        <span class="pm-gemoji">👧</span>
+        <strong>Niña</strong>
+        <small>Tema rosado con estrellas ⭐</small>
+        @if (genero() === 'NINA') {
+          <span class="pm-ok">✓</span>
+        }
       </button>
     </div>
+    <app-error-campo [control]="form.controls.genero" />
+
+    <h3 class="pm-titulo"><span class="pm-n">2</span> Cuéntanos sobre tu peque</h3>
+    <div class="pm-campos">
+      <div class="pm-campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100"
+               autocomplete="off" placeholder="¿Cómo se llama?" />
+        <app-error-campo [control]="form.controls.nombre" />
+      </div>
+      <div class="pm-campo">
+        <label for="fechaNacimiento">Fecha de nacimiento</label>
+        <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [max]="hoy" />
+        <app-error-campo [control]="form.controls.fechaNacimiento" />
+      </div>
+    </div>
+
+    <div class="pm-campo">
+      <label for="psicologoId">Su psicóloga</label>
+      <select id="psicologoId" formControlName="psicologoId">
+        <option [ngValue]="0" disabled>Selecciona a su psicóloga</option>
+        @for (p of psicologos(); track p.id) {
+          <option [ngValue]="p.id">{{ p.nombre }}</option>
+        }
+      </select>
+      <app-error-campo [control]="form.controls.psicologoId" />
+    </div>
+
+    <div class="pm-campo">
+      <label for="motivoConsulta">¿Qué te preocupa? (opcional)</label>
+      <textarea id="motivoConsulta" rows="3" formControlName="motivoConsulta" appFiltro="texto" maxlength="500"
+                placeholder="Cuéntanos con tus palabras..."></textarea>
+      <small class="contador">{{ form.controls.motivoConsulta.value.length }}/500</small>
+      <app-error-campo [control]="form.controls.motivoConsulta" />
+    </div>
+
+    @if (error()) {
+      <div class="pm-alerta">{{ error() }}</div>
+    }
+
+    <button type="submit" class="pm-enviar" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando...' : '🎉 Registrar a mi peque' }}
+    </button>
   </form>
 </div>

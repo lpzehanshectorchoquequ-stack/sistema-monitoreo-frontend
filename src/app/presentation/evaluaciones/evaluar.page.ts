@@ -6,6 +6,7 @@ import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes
 import { Evaluacion, Instrumento, OPCIONES_RESPUESTA } from '../../domain/evaluacion.model';
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
 import { ResultadoComponent } from './resultado.component';
+import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 
 const ICONOS: Record<string, string> = { TDAH: '⚡', TEA: '🧩', APRENDIZAJE: '📚' };
 const SUBTITULOS: Record<string, string> = {
@@ -25,8 +26,9 @@ const AREAS: Record<string, string> = {
 
 @Component({
   selector: 'app-evaluar',
-  imports: [ResultadoComponent, RouterLink],
+  imports: [ResultadoComponent, RouterLink, FiltroEntradaDirective],
   templateUrl: './evaluar.page.html',
+  styleUrl: './evaluar.page.scss',
 })
 export class EvaluarPage implements OnInit {
   private readonly evaluaciones = inject(GestionarEvaluacionesUseCase);
@@ -38,6 +40,7 @@ export class EvaluarPage implements OnInit {
   protected readonly instrumentos = signal<Instrumento[]>([]);
   protected readonly paciente = signal<Paciente | null>(null);
   protected readonly instrumento = signal<Instrumento | null>(null);
+  protected readonly elegidoId = signal<number | null>(null);
   protected readonly respuestas = signal<Record<number, number>>({});
   protected readonly observaciones = signal('');
   protected readonly resultado = signal<Evaluacion | null>(null);
@@ -46,7 +49,7 @@ export class EvaluarPage implements OnInit {
 
   protected readonly opciones = OPCIONES_RESPUESTA;
   protected readonly edad = calcularEdad;
-  protected readonly nombresPasos = ['Paciente', 'Instrumento', 'Cuestionario', 'Resultado'];
+  protected readonly nombresPasos = ['Paciente', 'Evaluación', 'Cuestionario', 'Resultado'];
 
   protected readonly contestadas = computed(() => Object.keys(this.respuestas()).length);
   protected readonly total = computed(() => this.instrumento()?.preguntas.length ?? 0);
@@ -92,25 +95,28 @@ export class EvaluarPage implements OnInit {
 
   protected elegirPaciente(paciente: Paciente): void {
     this.paciente.set(paciente);
-    this.paso.set(2);
+    setTimeout(() => this.paso.set(2), 350);
   }
 
   protected elegirInstrumento(instrumento: Instrumento): void {
+    this.elegidoId.set(instrumento.id);
     this.cargando.set(true);
     this.error.set(null);
-    this.evaluaciones.obtenerInstrumento(instrumento.id).subscribe({
-      next: (completo) => {
-        this.instrumento.set(completo);
-        this.respuestas.set({});
-        this.observaciones.set('');
-        this.paso.set(3);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.cargando.set(false);
-        this.error.set('No se pudo cargar el cuestionario');
-      },
-    });
+    setTimeout(() => {
+      this.evaluaciones.obtenerInstrumento(instrumento.id).subscribe({
+        next: (completo) => {
+          this.instrumento.set(completo);
+          this.respuestas.set({});
+          this.observaciones.set('');
+          this.paso.set(3);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.cargando.set(false);
+          this.error.set('No se pudo cargar el cuestionario');
+        },
+      });
+    }, 400);
   }
 
   protected responder(preguntaId: number, valor: number): void {
@@ -124,7 +130,7 @@ export class EvaluarPage implements OnInit {
           document
             .getElementById('q-' + siguiente.id)
             ?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
-        250,
+        450,
       );
     }
   }
@@ -168,6 +174,7 @@ export class EvaluarPage implements OnInit {
   protected nueva(): void {
     this.paciente.set(null);
     this.instrumento.set(null);
+    this.elegidoId.set(null);
     this.respuestas.set({});
     this.resultado.set(null);
     this.error.set(null);

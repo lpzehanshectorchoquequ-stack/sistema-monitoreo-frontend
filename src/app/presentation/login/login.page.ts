@@ -3,24 +3,28 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginUseCase } from '../../application/login.use-case';
+import { correoValido } from '../shared/validadores';
+import { ErrorCampoComponent } from '../shared/error-campo.component';
+import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ErrorCampoComponent, FiltroEntradaDirective],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
 })
 export class LoginPage {
   private readonly fb = inject(FormBuilder);
-  private readonly loginUseCase = inject(LoginUseCase);
+  private readonly loginUseCase = inject(LoginUseCase); 
   private readonly router = inject(Router);
 
   protected readonly cargando = signal(false);
   protected readonly error = signal<string | null>(null);
 
+  // <-- 2. Reemplazado el formulario con los nuevos validadores
   protected readonly form = this.fb.nonNullable.group({
-    correo: ['', [Validators.required, Validators.email]],
-    contrasena: ['', [Validators.required]],
+    correo: ['', [Validators.required, correoValido(), Validators.maxLength(100)]],
+    contrasena: ['', [Validators.required, Validators.maxLength(100)]],
   });
 
   protected ingresar(): void {
