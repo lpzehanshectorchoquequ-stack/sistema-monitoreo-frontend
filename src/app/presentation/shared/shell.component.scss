@@ -141,6 +141,8 @@ nav a.activo {
 }
 
 .salir {
+  a.salir { 
+    text-decoration: none; }
   padding: 0.4rem 0.6rem;
   border: 0;
   background: rgba(255, 255, 255, 0.22);

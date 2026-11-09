@@ -15,13 +15,12 @@ import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 })
 export class LoginPage {
   private readonly fb = inject(FormBuilder);
-  private readonly loginUseCase = inject(LoginUseCase); 
+  private readonly loginUseCase = inject(LoginUseCase);
   private readonly router = inject(Router);
 
   protected readonly cargando = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  // <-- 2. Reemplazado el formulario con los nuevos validadores
   protected readonly form = this.fb.nonNullable.group({
     correo: ['', [Validators.required, correoValido(), Validators.maxLength(100)]],
     contrasena: ['', [Validators.required, Validators.maxLength(100)]],
@@ -37,9 +36,9 @@ export class LoginPage {
 
     const { correo, contrasena } = this.form.getRawValue();
     this.loginUseCase.ejecutar(correo, contrasena).subscribe({
-      next: () => {
+      next: (sesion) => {
         this.cargando.set(false);
-        this.router.navigateByUrl('/');
+        this.router.navigateByUrl(sesion.debeCambiarContrasena ? '/cambiar-contrasena' : '/');
       },
       error: (e: HttpErrorResponse) => {
         this.cargando.set(false);

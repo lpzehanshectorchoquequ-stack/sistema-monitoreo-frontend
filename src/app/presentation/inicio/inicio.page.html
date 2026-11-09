@@ -1,7 +1,7 @@
 @if (sesion(); as s) {
   <section class="hero">
     <div>
-      <h1>¡Hola, {{ s.nombre }}! </h1>
+      <h1>¡Hola, {{ s.nombre }}! 👋</h1>
       @switch (s.rol) {
         @case ('Psicologo') {
           <p>Aquí puedes gestionar a tus pacientes y acompañar su avance.</p>
@@ -20,6 +20,11 @@
   <div class="tarjetas">
     @switch (s.rol) {
       @case ('Admin') {
+        <a class="tarjeta-enlace" routerLink="/usuarios">
+          <div class="icono">👥</div>
+          <strong>Usuarios</strong>
+          <span>Crear cuentas de psicólogas y administrar accesos</span>
+        </a>
         <a class="tarjeta-enlace" routerLink="/pacientes">
           <div class="icono">🧒</div>
           <strong>Pacientes</strong>
@@ -27,12 +32,17 @@
         </a>
       }
       @case ('Psicologo') {
+        <a class="tarjeta-enlace" routerLink="/usuarios">
+          <div class="icono">👨‍👩‍👧</div>
+          <strong>Mis tutores</strong>
+          <span>Crear la cuenta de cada familia</span>
+        </a>
         <a class="tarjeta-enlace" routerLink="/pacientes">
           <div class="icono">🧒</div>
           <strong>Mis pacientes</strong>
           <span>Registrar, editar y consultar pacientes</span>
         </a>
-          <a class="tarjeta-enlace" routerLink="/evaluaciones">
+        <a class="tarjeta-enlace" routerLink="/evaluaciones">
           <div class="icono">🧠</div>
           <strong>Evaluaciones</strong>
           <span>Aplicar cuestionarios y ver resultados</span>
@@ -40,7 +50,7 @@
         <div class="tarjeta-enlace pronto">
           <div class="icono">📅</div>
           <strong>Citas y horarios</strong>
-          <span>Agenda y disponibilidad</span>
+          <span>Agenda y disponibilidad (pronto)</span>
         </div>
       }
       @case ('Tutor') {

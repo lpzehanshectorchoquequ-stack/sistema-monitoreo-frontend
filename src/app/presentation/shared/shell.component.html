@@ -33,7 +33,8 @@
         <div class="datos">
           <strong>{{ s.nombre }}</strong>
           <small>{{ s.rol }}</small>
-        </div>  
+        </div>
+          <a routerLink="/cambiar-contrasena" class="salir" title="Cambiar contraseña">🔑</a>  
         <button type="button" class="salir" (click)="cerrarSesion()" title="Cerrar sesión">⎋</button>
       </div>
     }

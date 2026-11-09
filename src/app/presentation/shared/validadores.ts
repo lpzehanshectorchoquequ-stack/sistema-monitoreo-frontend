@@ -99,3 +99,11 @@ export function mensajeError(errores: ValidationErrors | null): string {
   if (errores['min']) return 'Selecciona una opción';
   return 'El valor ingresado no es válido';
 }
+
+export function coincidenContrasenas(campo: string, confirmacion: string): ValidatorFn {
+  return (grupo: AbstractControl): ValidationErrors | null => {
+    const a = grupo.get(campo)?.value;
+    const b = grupo.get(confirmacion)?.value;
+    return a === b ? null : { noCoinciden: true };
+  };
+}

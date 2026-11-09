@@ -45,17 +45,6 @@
     </div>
 
     <div class="pm-campo">
-      <label for="psicologoId">Su psicóloga</label>
-      <select id="psicologoId" formControlName="psicologoId">
-        <option [ngValue]="0" disabled>Selecciona a su psicóloga</option>
-        @for (p of psicologos(); track p.id) {
-          <option [ngValue]="p.id">{{ p.nombre }}</option>
-        }
-      </select>
-      <app-error-campo [control]="form.controls.psicologoId" />
-    </div>
-
-    <div class="pm-campo">
       <label for="motivoConsulta">¿Qué te preocupa? (opcional)</label>
       <textarea id="motivoConsulta" rows="3" formControlName="motivoConsulta" appFiltro="texto" maxlength="500"
                 placeholder="Cuéntanos con tus palabras..."></textarea>

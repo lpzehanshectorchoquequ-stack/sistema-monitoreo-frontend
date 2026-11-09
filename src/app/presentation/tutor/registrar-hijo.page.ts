@@ -1,13 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
-import { Psicologo } from '../../domain/paciente.model';
-import { TemaService } from '../shared/tema.service';
-import { fechaNacimientoValida, nombreValido, textoValido } from '../shared/validadores';
 import { ErrorCampoComponent } from '../shared/error-campo.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
+import { TemaService } from '../shared/tema.service';
+import { fechaNacimientoValida, nombreValido, textoValido } from '../shared/validadores';
 
 @Component({
   selector: 'app-registrar-hijo',
@@ -15,13 +14,12 @@ import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
   templateUrl: './registrar-hijo.page.html',
   styleUrl: './registrar-hijo.page.scss',
 })
-export class RegistrarHijoPage implements OnInit {
+export class RegistrarHijoPage {
   private readonly fb = inject(FormBuilder);
   private readonly casoUso = inject(GestionarPacientesUseCase);
   private readonly router = inject(Router);
   private readonly tema = inject(TemaService);
 
-  protected readonly psicologos = signal<Psicologo[]>([]);
   protected readonly genero = signal<'' | 'NINO' | 'NINA'>('');
   protected readonly guardando = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -31,18 +29,8 @@ export class RegistrarHijoPage implements OnInit {
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
     fechaNacimiento: ['', [Validators.required, fechaNacimientoValida()]],
     genero: ['', Validators.required],
-    psicologoId: [0, [Validators.required, Validators.min(1)]],
     motivoConsulta: ['', [textoValido(), Validators.maxLength(500)]],
   });
-
-  ngOnInit(): void {
-    this.casoUso.psicologos().subscribe((lista) => {
-      this.psicologos.set(lista);
-      if (lista.length === 1) {
-        this.form.controls.psicologoId.setValue(lista[0].id);
-      }
-    });
-  }
 
   protected elegirGenero(genero: 'NINO' | 'NINA'): void {
     this.genero.set(genero);

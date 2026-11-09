@@ -36,10 +36,15 @@ export class ShellComponent implements OnInit {
     const inicio: ItemMenu = { etiqueta: 'Inicio', icono: '🏠', ruta: '/', exacto: true };
     switch (this.sesion()?.rol) {
       case 'Admin':
-        return [inicio, { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' }];
+        return [
+          inicio,
+          { etiqueta: 'Usuarios', icono: '👥', ruta: '/usuarios' },
+          { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
+        ];
       case 'Psicologo':
         return [
           inicio,
+          { etiqueta: 'Mis tutores', icono: '👨‍👩‍👧', ruta: '/usuarios' },
           { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
           { etiqueta: 'Evaluaciones', icono: '🧠', ruta: '/evaluaciones' },
           { etiqueta: 'Citas', icono: '📅' },
@@ -56,8 +61,8 @@ export class ShellComponent implements OnInit {
     }
   });
 
-    ngOnInit(): void {
-     if (this.sesion()?.rol === 'Tutor') {
+  ngOnInit(): void {
+    if (this.sesion()?.rol === 'Tutor') {
       this.pacientes.misHijos().subscribe((lista) => {
         if (lista.length === 0) {
           this.router.navigateByUrl('/mis-hijos/registrar');

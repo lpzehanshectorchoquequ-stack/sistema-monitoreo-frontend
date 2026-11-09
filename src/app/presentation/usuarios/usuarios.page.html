@@ -1,0 +1,118 @@
+<div class="pm-usr">
+  <section class="pm-hero2">
+    <div>
+      <h1>{{ esAdmin() ? '👥 Usuarios' : '👨‍👩‍👧 Mis tutores' }}</h1>
+      <p>
+        {{ esAdmin()
+          ? 'Crea las cuentas de las psicólogas y administra quién puede entrar al sistema.'
+          : 'Crea la cuenta de cada familia. Verás una contraseña temporal una sola vez: entrégasela al tutor y deberá cambiarla al ingresar.' }}
+      </p>
+    </div>
+    <button type="button" class="pm-nueva" (click)="abrirFormulario()">+ Nueva cuenta</button>
+  </section>
+
+  @if (error()) {
+    <div class="pm-alerta">{{ error() }}</div>
+  }
+
+  @if (mostrandoForm()) {
+    <form class="pm-panel" [formGroup]="form" (ngSubmit)="crear()">
+      <h3>✨ Nueva cuenta</h3>
+
+      <div class="pm-campos">
+        <div class="pm-campo">
+          <label for="nombre">Nombre completo</label>
+          <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100" autocomplete="off" />
+          <app-error-campo [control]="form.controls.nombre" />
+        </div>
+        <div class="pm-campo">
+          <label for="correo">Correo</label>
+          <input id="correo" type="email" formControlName="correo" appFiltro="correo" maxlength="100" autocomplete="off" />
+          <app-error-campo [control]="form.controls.correo" />
+        </div>
+      </div>
+
+      @if (esAdmin()) {
+        <div class="pm-campo">
+          <label>Tipo de cuenta</label>
+          <div class="pm-roles">
+            @for (r of rolesPermitidos(); track r) {
+              <button type="button" class="pm-rol" [class.sel]="form.controls.rol.value === r"
+                      (click)="form.controls.rol.setValue(r)">
+                {{ avatar(r) }} {{ nombreRol(r) }}
+              </button>
+            }
+          </div>
+          <app-error-campo [control]="form.controls.rol" />
+        </div>
+      } @else {
+        <p class="pm-suave">Se creará una cuenta de <strong>tutor</strong> asociada a ti.</p>
+      }
+
+      <div class="pm-acciones">
+        <button type="button" class="pm-btn sec" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="pm-btn prim" [disabled]="guardando()">
+          {{ guardando() ? 'Creando...' : 'Crear cuenta' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (usuarios().length === 0) {
+    <div class="pm-vacio">
+      <div class="pm-vacio-emoji">👪</div>
+      <h3>Aún no hay cuentas</h3>
+      <p>Pulsa "Nueva cuenta" para crear la primera.</p>
+    </div>
+  } @else {
+    <div class="pm-lista">
+      @for (u of usuarios(); track u.id) {
+        <article class="pm-user" [class.inactivo]="!u.activo">
+          <div class="pm-user-avatar">{{ avatar(u.rol) }}</div>
+          <div class="pm-user-info">
+            <strong>{{ u.nombre }}</strong>
+            <span class="pm-correo">{{ u.correo }}</span>
+            <div class="pm-chips">
+              <span class="chip">{{ nombreRol(u.rol) }}</span>
+              <span class="chip" [class.ok]="u.activo" [class.off]="!u.activo">{{ u.activo ? 'Activa' : 'Desactivada' }}</span>
+              @if (u.pendienteCambio) {
+                <span class="chip pend">⏳ Debe cambiar su contraseña</span>
+              }
+              @if (esAdmin() && u.psicologoNombre) {
+                <span class="chip">👩‍⚕️ {{ u.psicologoNombre }}</span>
+              }
+            </div>
+          </div>
+          <div class="pm-user-acciones">
+            <button type="button" class="pm-mini" (click)="restablecer(u)">🔑 Restablecer contraseña</button>
+            <button type="button" class="pm-mini" [class.peligro]="u.activo" [disabled]="esMiCuenta(u)"
+                    (click)="alternarEstado(u)">
+              {{ u.activo ? '⏸ Desactivar' : '▶ Activar' }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  @if (credencial(); as c) {
+    <div class="pm-overlay">
+      <div class="pm-cred">
+        <div class="pm-cred-emoji">🔐</div>
+        <h2>{{ c.titulo }}</h2>
+        <p>Entrega estos datos a <strong>{{ c.nombre }}</strong>:</p>
+        <div class="pm-cred-caja"><span>Correo</span><strong>{{ c.correo }}</strong></div>
+        <div class="pm-cred-caja"><span>Contraseña temporal</span><strong class="mono">{{ c.contrasena }}</strong></div>
+        <div class="pm-cred-aviso">
+          ⚠️ Esta contraseña se muestra una sola vez. Al ingresar, la persona deberá crear la suya propia.
+        </div>
+        <div class="pm-acciones">
+          <button type="button" class="pm-btn sec" (click)="copiar(c)">{{ copiado() ? '✓ Copiado' : '📋 Copiar datos' }}</button>
+          <button type="button" class="pm-btn prim" (click)="cerrarCredencial()">Entendido</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

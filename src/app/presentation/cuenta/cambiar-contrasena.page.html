@@ -1,0 +1,53 @@
+<app-fondo />
+<main class="cc">
+  <section class="cc-card">
+    <div class="cc-emoji">🔐</div>
+
+    @if (sesion(); as s) {
+      <h1>{{ s.debeCambiarContrasena ? '¡Hola, ' + s.nombre + '!' : 'Cambiar contraseña' }}</h1>
+      <p class="cc-sub">
+        {{ s.debeCambiarContrasena
+          ? 'Por tu seguridad, crea tu propia contraseña antes de continuar.'
+          : 'Elige una contraseña nueva para tu cuenta.' }}
+      </p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <label for="actual">Contraseña actual (la temporal que te entregaron)</label>
+      <input id="actual" [type]="mostrar() ? 'text' : 'password'" formControlName="actual"
+             autocomplete="current-password" maxlength="100" />
+      <app-error-campo [control]="form.controls.actual" />
+
+      <label for="nueva">Contraseña nueva</label>
+      <input id="nueva" [type]="mostrar() ? 'text' : 'password'" formControlName="nueva"
+             autocomplete="new-password" maxlength="64" />
+      <ul class="cc-reglas">
+        <li [class.ok]="longitudOk()">{{ longitudOk() ? '✓' : '○' }} Entre 8 y 64 caracteres</li>
+        <li [class.ok]="letraOk()">{{ letraOk() ? '✓' : '○' }} Al menos una letra</li>
+        <li [class.ok]="numeroOk()">{{ numeroOk() ? '✓' : '○' }} Al menos un número</li>
+        <li [class.ok]="sinEspaciosOk()">{{ sinEspaciosOk() ? '✓' : '○' }} Sin espacios</li>
+      </ul>
+
+      <label for="confirmar">Repite la contraseña nueva</label>
+      <input id="confirmar" [type]="mostrar() ? 'text' : 'password'" formControlName="confirmar"
+             autocomplete="new-password" maxlength="64" />
+      <app-error-campo [control]="form.controls.confirmar" />
+      @if (form.controls.confirmar.touched && form.errors?.['noCoinciden']) {
+        <small class="cc-error">⚠️ Las contraseñas no coinciden</small>
+      }
+
+      <label class="cc-ver">
+        <input type="checkbox" (change)="mostrar.set($any($event.target).checked)" />
+        Mostrar contraseñas
+      </label>
+
+      @if (error()) {
+        <div class="cc-alerta">{{ error() }}</div>
+      }
+
+      <button type="submit" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando...' : '✅ Guardar mi contraseña' }}
+      </button>
+    </form>
+  </section>
+</main>

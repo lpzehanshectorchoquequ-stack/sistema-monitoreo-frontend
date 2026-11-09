@@ -3,4 +3,5 @@ export interface Sesion {
   nombre: string;
   correo: string;
   rol: string;
+  debeCambiarContrasena: boolean;
 }

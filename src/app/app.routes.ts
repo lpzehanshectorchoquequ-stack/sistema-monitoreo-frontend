@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './presentation/guards/auth.guard';
+import { authGuard, sesionGuard } from './presentation/guards/auth.guard';
 import { rolGuard } from './presentation/guards/role.guard';
 import { ShellComponent } from './presentation/shared/shell.component';
 
@@ -8,6 +8,12 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./presentation/login/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'cambiar-contrasena',
+    canActivate: [sesionGuard],
+    loadComponent: () =>
+      import('./presentation/cuenta/cambiar-contrasena.page').then((m) => m.CambiarContrasenaPage),
   },
   {
     path: '',
@@ -20,10 +26,28 @@ export const routes: Routes = [
           import('./presentation/inicio/inicio.page').then((m) => m.InicioPage),
       },
       {
+        path: 'usuarios',
+        canActivate: [rolGuard(['Admin', 'Psicologo'])],
+        loadComponent: () =>
+          import('./presentation/usuarios/usuarios.page').then((m) => m.UsuariosPage),
+      },
+      {
         path: 'pacientes',
         canActivate: [rolGuard(['Psicologo', 'Admin'])],
         loadComponent: () =>
           import('./presentation/pacientes/pacientes-lista.page').then((m) => m.PacientesListaPage),
+      },
+      {
+        path: 'pacientes/nuevo',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/pacientes/paciente-form.page').then((m) => m.PacienteFormPage),
+      },
+      {
+        path: 'pacientes/:id/editar',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/pacientes/paciente-form.page').then((m) => m.PacienteFormPage),
       },
       {
         path: 'pacientes/:id/historial',
@@ -38,18 +62,6 @@ export const routes: Routes = [
           import('./presentation/evaluaciones/evaluar.page').then((m) => m.EvaluarPage),
       },
       {
-        path: 'pacientes/nuevo',
-        canActivate: [rolGuard(['Psicologo', 'Admin'])],
-        loadComponent: () =>
-          import('./presentation/pacientes/paciente-form.page').then((m) => m.PacienteFormPage),
-      },
-      {
-        path: 'pacientes/:id/editar',
-        canActivate: [rolGuard(['Psicologo', 'Admin'])],
-        loadComponent: () =>
-          import('./presentation/pacientes/paciente-form.page').then((m) => m.PacienteFormPage),
-      },
-            {
         path: 'mis-hijos',
         canActivate: [rolGuard(['Tutor'])],
         loadComponent: () =>
