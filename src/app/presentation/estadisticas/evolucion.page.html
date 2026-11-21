@@ -1,0 +1,85 @@
+<div class="pm-evo">
+  <app-boton-atras />
+
+  @if (error()) {
+    <div class="pm-alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (evolucion(); as e) {
+    <section class="pm-evo-cab">
+      <div>
+        <h1>📈 Evolución de {{ e.pacienteNombre }}</h1>
+        <p>Aquí se ve cómo cambian los indicadores de cada evaluación con el paso del tiempo.</p>
+      </div>
+      <button type="button" class="pm-pdf" [disabled]="puntos().length === 0" (click)="descargarPdf()">
+        📄 Descargar PDF
+      </button>
+    </section>
+
+    @if (e.puntos.length === 0) {
+      <div class="pm-vacio">
+        <div class="pm-vacio-emoji">🌱</div>
+        <h3>Aún no hay evaluaciones</h3>
+        <p>Cuando se aplique la primera evaluación, aquí aparecerá su evolución.</p>
+      </div>
+    } @else {
+      <section class="pm-filtros">
+        <label>Desde <input type="date" [value]="desde()" (change)="desde.set($any($event.target).value)" /></label>
+        <label>Hasta <input type="date" [value]="hasta()" (change)="hasta.set($any($event.target).value)" /></label>
+        @if (desde() || hasta()) {
+          <button type="button" class="pm-limpiar" (click)="quitarFiltro()">Quitar filtro</button>
+        }
+      </section>
+
+      @if (puntos().length === 0) {
+        <div class="pm-vacio"><p>No hay evaluaciones en ese rango de fechas.</p></div>
+      } @else {
+        <div class="pm-resumenes">
+          @for (r of resumenes(); track r.nombre) {
+            <article class="pm-resumen" [class]="'pm-resumen ' + r.tipo">
+              <h3>{{ r.nombre }}</h3>
+              <div class="pm-cifras">
+                <div><span>Primera</span><strong>{{ r.primero }}%</strong></div>
+                <div class="flecha">→</div>
+                <div><span>Última</span><strong>{{ r.ultimo }}%</strong></div>
+              </div>
+              <p>{{ r.mensaje }}</p>
+              <small>{{ r.total }} {{ r.total === 1 ? 'evaluación' : 'evaluaciones' }}</small>
+            </article>
+          }
+        </div>
+
+        <section class="pm-card">
+          <h3>Intensidad de los indicadores</h3>
+          <p class="pm-nota">Es el porcentaje del puntaje máximo posible. Mientras más bajo, menos indicadores se observan.</p>
+          <app-grafico tipo="line" [etiquetas]="etiquetasGrafico()" [series]="series()" [maximoY]="100" />
+        </section>
+
+        <section class="pm-card">
+          <h3>Detalle de las evaluaciones</h3>
+          <table class="pm-tabla">
+            <thead>
+              <tr><th>Fecha</th><th>Evaluación</th><th>Resultado</th><th>Intensidad</th><th>Síntomas</th></tr>
+            </thead>
+            <tbody>
+              @for (p of puntos(); track p.evaluacionId) {
+                <tr>
+                  <td>{{ p.fecha }}</td>
+                  <td>{{ p.instrumento }}</td>
+                  <td><span [class]="'pm-nivel nv-' + p.nivel">{{ etiquetaNivel[p.nivel] ?? p.nivel }}</span></td>
+                  <td>
+                    <div class="pm-mini-barra"><div [style.width.%]="p.porcentaje"></div></div>
+                    {{ p.porcentaje }}%
+                  </td>
+                  <td>{{ p.sintomas }} de {{ p.totalPreguntas }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+    }
+  }
+</div>

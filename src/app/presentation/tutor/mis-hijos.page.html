@@ -1,4 +1,5 @@
 <div class="pm-wrap">
+  <app-boton-atras />
   @if (error()) {
     <div class="pm-alerta">{{ error() }}</div>
   }
@@ -14,6 +15,7 @@
           <span>🎂 {{ edad(h.fechaNacimiento) }} años</span>
           <span>👩‍⚕️ {{ h.psicologoNombre ?? 'Sin asignar' }}</span>
         </div>
+        <a class="pm-evolucion" [routerLink]="['/evolucion', h.id]">📈 Ver evolución</a>
         @if (h.motivoConsulta) {
           <p class="pm-motivo">💬 {{ h.motivoConsulta }}</p>
         }

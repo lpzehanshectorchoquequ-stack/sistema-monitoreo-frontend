@@ -40,12 +40,14 @@ export class ShellComponent implements OnInit {
           inicio,
           { etiqueta: 'Usuarios', icono: '👥', ruta: '/usuarios' },
           { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
+          { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
         ];
       case 'Psicologo':
         return [
           inicio,
           { etiqueta: 'Mis tutores', icono: '👨‍👩‍👧', ruta: '/usuarios' },
           { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
+          { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
           { etiqueta: 'Evaluaciones', icono: '🧠', ruta: '/evaluaciones' },
           { etiqueta: 'Citas', icono: '📅' },
           { etiqueta: 'Horarios', icono: '🕒' },

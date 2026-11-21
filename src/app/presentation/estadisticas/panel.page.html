@@ -1,0 +1,51 @@
+<div class="pm-panel">
+  <app-boton-atras />
+
+  <section class="pm-cab">
+    <h1>📊 {{ esAdmin() ? 'Estadísticas generales' : 'Mis estadísticas' }}</h1>
+    <p>Un resumen visual de los pacientes y las evaluaciones{{ esAdmin() ? ' de todas las psicólogas' : '' }}.</p>
+  </section>
+
+  @if (error()) {
+    <div class="pm-alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (resumen(); as r) {
+    <div class="pm-kpis">
+      <div class="pm-kpi a"><span>🧒</span><strong>{{ r.totalPacientes }}</strong><small>Pacientes</small></div>
+      <div class="pm-kpi b"><span>👨‍👩‍👧</span><strong>{{ r.totalTutores }}</strong><small>Tutores</small></div>
+      <div class="pm-kpi c"><span>🧠</span><strong>{{ r.totalEvaluaciones }}</strong><small>Evaluaciones</small></div>
+    </div>
+
+    <div class="pm-graficos">
+      <section class="pm-g">
+        <h3>Evaluaciones por mes</h3>
+        <app-grafico tipo="bar" [etiquetas]="porMes().etiquetas" [series]="porMes().series" />
+      </section>
+      <section class="pm-g">
+        <h3>Resultados por nivel</h3>
+        <app-grafico tipo="doughnut" [etiquetas]="porNivel().etiquetas" [series]="porNivel().series" />
+      </section>
+      <section class="pm-g">
+        <h3>Evaluaciones por área</h3>
+        <app-grafico tipo="bar" [etiquetas]="porArea().etiquetas" [series]="porArea().series" />
+      </section>
+      <section class="pm-g">
+        <h3>Pacientes por edad</h3>
+        <app-grafico tipo="bar" [etiquetas]="porEdad().etiquetas" [series]="porEdad().series" />
+      </section>
+      <section class="pm-g">
+        <h3>Pacientes por género</h3>
+        <app-grafico tipo="doughnut" [etiquetas]="porGenero().etiquetas" [series]="porGenero().series" />
+      </section>
+      @if (esAdmin()) {
+        <section class="pm-g">
+          <h3>Pacientes por psicóloga</h3>
+          <app-grafico tipo="bar" [etiquetas]="porPsicologa().etiquetas" [series]="porPsicologa().series" />
+        </section>
+      }
+    </div>
+  }
+</div>

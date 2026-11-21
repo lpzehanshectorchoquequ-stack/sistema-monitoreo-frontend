@@ -73,6 +73,17 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./presentation/tutor/registrar-hijo.page').then((m) => m.RegistrarHijoPage),
       },
+      {
+        path: 'estadisticas',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/estadisticas/panel.page').then((m) => m.PanelEstadisticasPage),
+      },
+      {
+        path: 'evolucion/:id',
+        loadComponent: () =>
+          import('./presentation/estadisticas/evolucion.page').then((m) => m.EvolucionPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
