@@ -1,0 +1,58 @@
+<div class="pt-wrap">
+  <app-boton-atras />
+
+  <section class="pt-hero">
+    <div>
+      <h1>📋 Tests de evaluación</h1>
+      <p>Crea tus propios tests, agrega o quita preguntas y define cómo se interpreta el resultado.</p>
+    </div>
+    <a class="pt-nuevo" routerLink="/tests/nuevo">+ Nuevo test</a>
+  </section>
+
+  @if (error()) {
+    <div class="pt-alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (tests().length === 0) {
+    <div class="pt-vacio">
+      <div class="pt-vacio-emoji">📝</div>
+      <h3>Aún no hay tests</h3>
+      <p>Crea el primero con el botón "Nuevo test".</p>
+    </div>
+  } @else {
+    <app-buscador [(valor)]="filtro" placeholder="Buscar un test por nombre..." />
+
+    @if (visibles().length === 0) {
+      <div class="pt-vacio"><p>No hay tests que coincidan con "{{ filtro() }}".</p></div>
+    }
+
+    <div class="pt-grid">
+      @for (t of visibles(); track t.id) {
+        <article class="pt-test" [attr.data-area]="t.trastorno">
+          <div class="pt-test-emoji">{{ icono(t.trastorno) }}</div>
+          <h3>{{ t.nombre }}</h3>
+          <div class="pt-chips">
+            <span>{{ nombreArea(t.trastorno) }}</span>
+            <span>📝 {{ t.totalPreguntas }} preguntas</span>
+            <span>👤 {{ t.quienResponde }}</span>
+            <span [class.borrador]="t.estadoValidacion === 'BORRADOR'" [class.validado]="t.estadoValidacion === 'VALIDADO'">
+              {{ t.estadoValidacion === 'VALIDADO' ? '✓ Validado' : 'Borrador' }}
+            </span>
+          </div>
+          @if (t.usado) {
+            <small class="pt-usado">Ya se usó en evaluaciones</small>
+          }
+          <div class="pt-acciones">
+            <a class="pt-btn claro" [routerLink]="['/tests', t.id]">✏️ Editar</a>
+            <button type="button" class="pt-btn peligro" [disabled]="t.usado" (click)="eliminar(t)"
+                    [title]="t.usado ? 'Un test usado no se puede eliminar' : 'Eliminar test'">
+              🗑 Eliminar
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

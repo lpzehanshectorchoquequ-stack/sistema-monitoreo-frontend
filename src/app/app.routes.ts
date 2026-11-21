@@ -84,6 +84,24 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./presentation/estadisticas/evolucion.page').then((m) => m.EvolucionPage),
       },
+      {
+        path: 'tests',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/tests/tests-lista.page').then((m) => m.TestsListaPage),
+      },
+      {
+        path: 'tests/nuevo',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/tests/test-editor.page').then((m) => m.TestEditorPage),
+      },
+      {
+        path: 'tests/:id',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/tests/test-editor.page').then((m) => m.TestEditorPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

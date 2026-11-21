@@ -1,0 +1,219 @@
+<div class="pt-wrap">
+  <app-boton-atras destino="/tests" />
+
+  <section class="pt-hero">
+    <div>
+      <h1>{{ id() === null ? '✨ Nuevo test' : '✏️ ' + (test()?.nombre ?? 'Editar test') }}</h1>
+      <p>
+        {{ id() === null
+          ? 'Primero llena los datos del test. Luego podrás agregarle las preguntas.'
+          : 'Edita los datos, agrega o quita preguntas y define cómo se interpreta el resultado.' }}
+      </p>
+    </div>
+  </section>
+
+  @if (error()) {
+    <div class="pt-alerta">{{ error() }}</div>
+  }
+  @if (exito()) {
+    <div class="pt-exito">✓ {{ exito() }}</div>
+  }
+
+  <!-- 1. Datos del test -->
+  <form class="pt-card" [formGroup]="formTest" (ngSubmit)="guardarDatos()">
+    <h3><span class="pt-n">1</span> Datos del test</h3>
+
+    <div class="pt-campo">
+      <label for="nombre">Nombre del test</label>
+      <input id="nombre" type="text" formControlName="nombre" appFiltro="texto" maxlength="100"
+             placeholder="Ej: Atención en clase" autocomplete="off" />
+      <app-error-campo [control]="formTest.controls.nombre" />
+    </div>
+
+    <div class="pt-campo">
+      <label for="descripcion">Descripción (opcional)</label>
+      <textarea id="descripcion" rows="2" formControlName="descripcion" appFiltro="texto" maxlength="500"
+                placeholder="¿Para qué sirve este test?"></textarea>
+      <app-error-campo [control]="formTest.controls.descripcion" />
+    </div>
+
+    <div class="pt-campo">
+      <label>¿De qué área es?</label>
+      <div class="pt-opciones">
+        @for (a of areas; track a.valor) {
+          <button type="button" class="pt-area" [attr.data-area]="a.valor"
+                  [class.sel]="formTest.controls.trastorno.value === a.valor" (click)="elegirArea(a.valor)">
+            <span class="emoji">{{ a.icono }}</span>
+            <strong>{{ a.nombre }}</strong>
+            <small>{{ a.detalle }}</small>
+            @if (formTest.controls.trastorno.value === a.valor) {
+              <span class="check">✓</span>
+            }
+          </button>
+        }
+      </div>
+      <app-error-campo [control]="formTest.controls.trastorno" />
+    </div>
+
+    <div class="pt-campo">
+      <label>¿Quién responde este test?</label>
+      <div class="pt-pildoras">
+        @for (r of responden; track r.valor) {
+          <button type="button" class="pt-pildora" [class.sel]="formTest.controls.quienResponde.value === r.valor"
+                  (click)="elegirResponde(r.valor)">
+            {{ r.icono }} {{ r.nombre }}
+          </button>
+        }
+      </div>
+      <app-error-campo [control]="formTest.controls.quienResponde" />
+    </div>
+
+    <div class="pt-campo">
+      <label>Estado</label>
+      <div class="pt-pildoras">
+        <button type="button" class="pt-pildora" [class.sel]="formTest.controls.estadoValidacion.value === 'BORRADOR'"
+                (click)="elegirEstado('BORRADOR')">📝 Borrador</button>
+        <button type="button" class="pt-pildora" [class.sel]="formTest.controls.estadoValidacion.value === 'VALIDADO'"
+                (click)="elegirEstado('VALIDADO')">✓ Validado</button>
+      </div>
+      <small class="pt-pista">Márcalo como "Validado" cuando hayas revisado las preguntas y los criterios.</small>
+    </div>
+
+    <div class="pt-fila-fin">
+      <button type="submit" class="pt-btn principal" [disabled]="guardando()">
+        {{ id() === null ? 'Crear test y agregar preguntas →' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </form>
+
+  @if (test(); as t) {
+    <!-- 2. Preguntas -->
+    <section class="pt-card">
+      <h3><span class="pt-n">2</span> Preguntas del test <small>({{ totalPreguntas() }})</small></h3>
+
+      @if (t.usado) {
+        <div class="pt-aviso">
+          ℹ️ Este test ya se usó en evaluaciones. Si cambias las preguntas, las evaluaciones anteriores
+          conservan las respuestas que se dieron.
+        </div>
+      }
+
+      @if (t.preguntas.length === 0) {
+        <div class="pt-vacio-chico">Aún no hay preguntas. Agrega la primera aquí abajo 👇</div>
+      }
+
+      <ol class="pt-preguntas">
+        @for (p of t.preguntas; track p.id) {
+          <li>
+            @if (editando() === p.id) {
+              <form class="pt-edicion" [formGroup]="formEdicion" (ngSubmit)="guardarEdicion(p)">
+                <textarea rows="2" formControlName="texto" appFiltro="texto" maxlength="300"></textarea>
+                <app-error-campo [control]="formEdicion.controls.texto" />
+                <input type="text" formControlName="subescala" appFiltro="nombre" maxlength="30"
+                       placeholder="Grupo (opcional)" />
+                <app-error-campo [control]="formEdicion.controls.subescala" />
+                <div class="pt-fila-fin">
+                  <button type="button" class="pt-btn claro" (click)="cancelarEdicion()">Cancelar</button>
+                  <button type="submit" class="pt-btn principal" [disabled]="guardando()">Guardar</button>
+                </div>
+              </form>
+            } @else {
+              <span class="pt-num">{{ p.orden }}</span>
+              <div class="pt-texto">
+                <p>{{ p.texto }}</p>
+                <span class="pt-grupo">{{ grupo(p.subescala) }}</span>
+              </div>
+              <div class="pt-mini-acciones">
+                <button type="button" class="pt-icono" title="Editar pregunta" (click)="empezarEdicion(p)">✏️</button>
+                <button type="button" class="pt-icono" title="Quitar pregunta" (click)="quitarPregunta(p)">🗑</button>
+              </div>
+            }
+          </li>
+        }
+      </ol>
+
+      <form class="pt-nueva" [formGroup]="formPregunta" (ngSubmit)="agregarPregunta()">
+        <h4>➕ Agregar una pregunta</h4>
+        <div class="pt-campo">
+          <label for="texto">Pregunta</label>
+          <textarea id="texto" rows="2" formControlName="texto" appFiltro="texto" maxlength="300"
+                    placeholder="Ej: Se distrae con facilidad durante la clase."></textarea>
+          <app-error-campo [control]="formPregunta.controls.texto" />
+        </div>
+        <div class="pt-campo">
+          <label for="subescala">Grupo (opcional)</label>
+          <input id="subescala" type="text" formControlName="subescala" appFiltro="nombre" maxlength="30"
+                 placeholder="Ej: Atención" autocomplete="off" />
+          <small class="pt-pista">Sirve para agrupar preguntas del mismo tema. Si lo dejas vacío, queda como "General".</small>
+          <app-error-campo [control]="formPregunta.controls.subescala" />
+        </div>
+        <div class="pt-fila-fin">
+          <button type="submit" class="pt-btn principal" [disabled]="guardando()">Agregar pregunta</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 3. Interpretación -->
+    <section class="pt-card">
+      <h3><span class="pt-n">3</span> ¿Cómo se interpreta el resultado?</h3>
+      <p class="pt-pista">
+        Un <strong>síntoma</strong> es una respuesta de "Frecuentemente" o "Casi siempre". El sistema cuenta
+        cuántos síntomas hay y compara con los umbrales que definas.
+      </p>
+
+      @if (t.advertencia) {
+        <div class="pt-aviso">⚠️ {{ t.advertencia }}</div>
+      }
+
+      @if (t.umbralesEditables) {
+        @if (totalPreguntas() < 2) {
+          <div class="pt-vacio-chico">Agrega al menos 2 preguntas para poder definir los umbrales.</div>
+        } @else {
+          <form class="pt-umbrales" [formGroup]="formUmbrales" (ngSubmit)="guardarUmbrales()">
+            <label>
+              <span>🟡 Indicadores <strong>moderados</strong> desde</span>
+              <input type="number" min="1" [max]="totalPreguntas()" formControlName="moderado" />
+              <span>síntomas</span>
+            </label>
+            <label>
+              <span>🔴 Indicadores <strong>altos</strong> desde</span>
+              <input type="number" min="2" [max]="totalPreguntas()" formControlName="alto" />
+              <span>síntomas</span>
+            </label>
+            <p class="pt-pista">El test tiene {{ totalPreguntas() }} preguntas, así que el máximo es {{ totalPreguntas() }}.</p>
+            <div class="pt-fila-fin">
+              <button type="submit" class="pt-btn principal" [disabled]="guardando()">Guardar umbrales</button>
+            </div>
+          </form>
+        }
+      } @else {
+        <div class="pt-aviso">
+          🔒 Este test usa reglas avanzadas del sistema experto. Aquí puedes consultarlas, pero no reemplazarlas por umbrales simples.
+        </div>
+      }
+
+      @if (t.reglas.length > 0) {
+        <h4>Reglas de este test</h4>
+        <div class="pt-reglas">
+          @for (r of t.reglas; track r.codigo) {
+            <article class="pt-regla">
+              <div class="pt-regla-cab">
+                @if (r.nivel) {
+                  <span [class]="'pt-nivel nv-' + r.nivel">{{ etiquetaNivel[r.nivel] ?? r.nivel }}</span>
+                } @else {
+                  <span class="pt-nivel paso">Paso intermedio</span>
+                }
+                <strong>{{ r.descripcion }}</strong>
+              </div>
+              <ul>
+                @for (c of r.condiciones; track $index) {
+                  <li>{{ describir(c) }}</li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>

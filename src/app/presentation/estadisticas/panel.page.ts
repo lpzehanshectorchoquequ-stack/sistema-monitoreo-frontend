@@ -6,7 +6,7 @@ import { BotonAtrasComponent } from '../shared/boton-atras.component';
 import { GraficoComponent, SerieGrafico } from '../shared/grafico.component';
 
 const ETIQUETA_GENERO: Record<string, string> = { NINO: 'Niños', NINA: 'Niñas', SIN_DATO: 'Sin dato' };
-const ETIQUETA_AREA: Record<string, string> = { TDAH: 'TDAH', TEA: 'TEA', APRENDIZAJE: 'Aprendizaje' };
+const ETIQUETA_AREA: Record<string, string> = { TDAH: 'TDAH', TEA: 'TEA', APRENDIZAJE: 'Aprendizaje', OTRA: 'Otra' };
 const COLOR_NIVEL: Record<string, string> = {
   SIN_INDICADORES: '#2e9e4f',
   MODERADO: '#f2a900',

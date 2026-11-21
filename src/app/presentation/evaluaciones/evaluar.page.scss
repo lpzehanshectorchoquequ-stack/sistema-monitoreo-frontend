@@ -197,6 +197,10 @@
     background: linear-gradient(135deg, #2bc48a, #1aa5b8);
   }
 
+  &[data-tipo='OTRA'] {
+    background: linear-gradient(135deg, #8e6bff, #ff6bb5);
+  }
+
   &:hover:not(:disabled) {
     transform: translateY(-8px) rotate(-0.7deg);
     box-shadow: 0 22px 40px rgba(0, 0, 0, 0.28);

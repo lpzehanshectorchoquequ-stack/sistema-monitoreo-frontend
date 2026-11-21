@@ -9,11 +9,12 @@ import { ResultadoComponent } from './resultado.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
-const ICONOS: Record<string, string> = { TDAH: '⚡', TEA: '🧩', APRENDIZAJE: '📚' };
+const ICONOS: Record<string, string> = { TDAH: '⚡', TEA: '🧩', APRENDIZAJE: '📚', OTRA: '🧠' };
 const SUBTITULOS: Record<string, string> = {
   TDAH: 'Atención y energía',
   TEA: 'Comunicación y conducta',
   APRENDIZAJE: 'Lectura, escritura y matemáticas',
+  OTRA: 'Evaluación general',
 };
 const AREAS: Record<string, string> = {
   INATENCION: 'Atención',
@@ -60,7 +61,9 @@ export class EvaluarPage implements OnInit {
   );
 
   ngOnInit(): void {
-    this.evaluaciones.listarInstrumentos().subscribe((lista) => this.instrumentos.set(lista));
+    this.evaluaciones
+      .listarInstrumentos()
+      .subscribe((lista) => this.instrumentos.set(lista.filter((i) => i.totalPreguntas > 0)));
     this.pacientesCasoUso.listar().subscribe({
       next: (lista) => {
         this.pacientes.set(lista);
@@ -87,7 +90,11 @@ export class EvaluarPage implements OnInit {
   }
 
   protected area(subescala: string): string {
-    return AREAS[subescala] ?? subescala;
+    if (AREAS[subescala]) {
+      return AREAS[subescala];
+    }
+    const texto = subescala.replace(/_/g, ' ').toLowerCase();
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
   }
 
   protected minutos(preguntas: number): number {
