@@ -279,7 +279,9 @@ body {
     opacity: 0.6;
     pointer-events: none;
   }
-  .pasos {
+}
+
+.pasos {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
@@ -473,6 +475,7 @@ body {
   align-items: center;
   justify-content: space-between;
 }
+
 @keyframes pop {
   0% {
     transform: scale(0.88);
@@ -749,6 +752,7 @@ body {
   background: #e6f7ea;
   border-radius: 14px;
 }
+
 .selector-genero {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -888,6 +892,7 @@ body {
   background: #fff3e0;
   color: #6b3f00;
 }
+
 body.tema-nino {
   background: linear-gradient(160deg, #bfe0ff 0%, #e8f4ff 55%, #ffffff 100%);
 }
@@ -895,9 +900,14 @@ body.tema-nino {
 body.tema-nina {
   background: linear-gradient(160deg, #ffc6dd 0%, #ffe8f2 55%, #ffffff 100%);
 }
+
 .contador {
   align-self: flex-end;
   font-size: 0.85rem;
   color: var(--c-suave);
 }
+
+.pista {
+  font-size: 0.9rem;
+  color: var(--c-suave);
 }

@@ -26,7 +26,6 @@ export interface HijoDatos {
   fechaNacimiento: string;
   genero: string;
   motivoConsulta: string;
-  psicologoId: number;
 }
 
 export interface Tutor {

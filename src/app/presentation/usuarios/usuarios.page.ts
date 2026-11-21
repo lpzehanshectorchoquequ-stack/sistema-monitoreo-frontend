@@ -7,6 +7,9 @@ import { Usuario, UsuarioCreado } from '../../domain/usuario.model';
 import { ErrorCampoComponent } from '../shared/error-campo.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 import { correoValido, nombreValido } from '../shared/validadores';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
+import { BuscadorComponent } from '../shared/buscador.component';
+import { normalizar } from '../shared/texto';
 
 interface Credencial {
   titulo: string;
@@ -25,7 +28,7 @@ const AVATARES: Record<string, string> = { Admin: '🛡️', Psicologo: '👩‍
 
 @Component({
   selector: 'app-usuarios',
-  imports: [ReactiveFormsModule, ErrorCampoComponent, FiltroEntradaDirective],
+  imports: [ReactiveFormsModule, ErrorCampoComponent, FiltroEntradaDirective, BotonAtrasComponent, BuscadorComponent],
   templateUrl: './usuarios.page.html',
   styleUrl: './usuarios.page.scss',
 })
@@ -44,6 +47,18 @@ export class UsuariosPage implements OnInit {
   protected readonly guardando = signal(false);
   protected readonly credencial = signal<Credencial | null>(null);
   protected readonly copiado = signal(false);
+
+  protected readonly filtro = signal('');
+
+  protected readonly visibles = computed(() => {
+    const consulta = normalizar(this.filtro());
+    if (!consulta) {
+      return this.usuarios();
+    }
+    return this.usuarios().filter(
+      (u) => normalizar(u.nombre).includes(consulta) || normalizar(u.correo).includes(consulta),
+    );
+  });
 
   protected readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],

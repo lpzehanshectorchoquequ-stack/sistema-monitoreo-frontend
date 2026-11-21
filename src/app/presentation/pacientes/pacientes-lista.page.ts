@@ -1,20 +1,35 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
+import { BuscadorComponent } from '../shared/buscador.component';
+import { normalizar } from '../shared/texto';
 
 @Component({
   selector: 'app-pacientes-lista',
-  imports: [RouterLink],
+  imports: [RouterLink, BotonAtrasComponent, BuscadorComponent],
   templateUrl: './pacientes-lista.page.html',
 })
 export class PacientesListaPage implements OnInit {
   private readonly casoUso = inject(GestionarPacientesUseCase);
 
   protected readonly pacientes = signal<Paciente[]>([]);
+  protected readonly filtro = signal('');
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly edad = calcularEdad;
+
+  protected readonly visibles = computed(() => {
+    const consulta = normalizar(this.filtro());
+    if (!consulta) {
+      return this.pacientes();
+    }
+    return this.pacientes().filter(
+      (p) =>
+        normalizar(p.nombre).includes(consulta) || normalizar(p.tutorNombre ?? '').includes(consulta),
+    );
+  });
 
   ngOnInit(): void {
     this.cargar();

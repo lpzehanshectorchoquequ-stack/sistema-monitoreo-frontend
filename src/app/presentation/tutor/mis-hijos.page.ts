@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
 import { TemaService } from '../shared/tema.service';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
 @Component({
   selector: 'app-mis-hijos',
-  imports: [RouterLink],
+  imports: [RouterLink, BotonAtrasComponent],
   templateUrl: './mis-hijos.page.html',
   styleUrl: './mis-hijos.page.scss',
 })

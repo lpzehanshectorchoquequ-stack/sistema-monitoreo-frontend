@@ -5,10 +5,11 @@ import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes
 import { Evaluacion } from '../../domain/evaluacion.model';
 import { Paciente } from '../../domain/paciente.model';
 import { ResultadoComponent } from './resultado.component';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
 @Component({
   selector: 'app-historial',
-  imports: [ResultadoComponent, RouterLink],
+  imports: [ResultadoComponent, RouterLink, BotonAtrasComponent],
   templateUrl: './historial.page.html',
 })
 export class HistorialPage implements OnInit {

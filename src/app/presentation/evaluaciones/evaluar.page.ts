@@ -7,6 +7,7 @@ import { Evaluacion, Instrumento, OPCIONES_RESPUESTA } from '../../domain/evalua
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
 import { ResultadoComponent } from './resultado.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
 const ICONOS: Record<string, string> = { TDAH: '⚡', TEA: '🧩', APRENDIZAJE: '📚' };
 const SUBTITULOS: Record<string, string> = {
@@ -26,7 +27,7 @@ const AREAS: Record<string, string> = {
 
 @Component({
   selector: 'app-evaluar',
-  imports: [ResultadoComponent, RouterLink, FiltroEntradaDirective],
+  imports: [ResultadoComponent, RouterLink, FiltroEntradaDirective, BotonAtrasComponent],
   templateUrl: './evaluar.page.html',
   styleUrl: './evaluar.page.scss',
 })

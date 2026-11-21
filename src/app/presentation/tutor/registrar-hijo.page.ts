@@ -6,11 +6,12 @@ import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes
 import { ErrorCampoComponent } from '../shared/error-campo.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 import { TemaService } from '../shared/tema.service';
-import { fechaNacimientoValida, nombreValido, textoValido } from '../shared/validadores';
+import { fechaNacimientoValida, nombreValido, rangoFechaNacimiento, textoValido } from '../shared/validadores';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
 @Component({
   selector: 'app-registrar-hijo',
-  imports: [ReactiveFormsModule, RouterLink, ErrorCampoComponent, FiltroEntradaDirective],
+  imports: [ReactiveFormsModule, ErrorCampoComponent, FiltroEntradaDirective, BotonAtrasComponent],
   templateUrl: './registrar-hijo.page.html',
   styleUrl: './registrar-hijo.page.scss',
 })
@@ -23,7 +24,7 @@ export class RegistrarHijoPage {
   protected readonly genero = signal<'' | 'NINO' | 'NINA'>('');
   protected readonly guardando = signal(false);
   protected readonly error = signal<string | null>(null);
-  protected readonly hoy = new Date().toISOString().slice(0, 10);
+  protected readonly rango = rangoFechaNacimiento();
 
   protected readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],

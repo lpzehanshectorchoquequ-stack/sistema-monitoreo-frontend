@@ -4,13 +4,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Tutor } from '../../domain/paciente.model';
-import { fechaNacimientoValida, nombreValido, textoValido } from '../shared/validadores';
+import { fechaNacimientoValida, nombreValido, rangoFechaNacimiento, textoValido } from '../shared/validadores';
 import { ErrorCampoComponent } from '../shared/error-campo.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
 @Component({
   selector: 'app-paciente-form',
-  imports: [ReactiveFormsModule, RouterLink, ErrorCampoComponent, FiltroEntradaDirective],
+  imports: [ReactiveFormsModule, RouterLink, ErrorCampoComponent, FiltroEntradaDirective, BotonAtrasComponent],
   templateUrl: './paciente-form.page.html',
 })
 export class PacienteFormPage implements OnInit {
@@ -23,7 +24,7 @@ export class PacienteFormPage implements OnInit {
   protected readonly tutores = signal<Tutor[]>([]);
   protected readonly guardando = signal(false);
   protected readonly error = signal<string | null>(null);
-  protected readonly hoy = new Date().toISOString().slice(0, 10);
+  protected readonly rango = rangoFechaNacimiento();
 
     protected readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],

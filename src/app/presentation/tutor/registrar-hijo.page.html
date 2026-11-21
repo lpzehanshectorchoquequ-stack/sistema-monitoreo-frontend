@@ -39,7 +39,8 @@
       </div>
       <div class="pm-campo">
         <label for="fechaNacimiento">Fecha de nacimiento</label>
-        <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [max]="hoy" />
+        <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [min]="rango.min" [max]="rango.max" />
+        <small class="pista">Edad permitida: de 6 a 12 años</small>
         <app-error-campo [control]="form.controls.fechaNacimiento" />
       </div>
     </div>
