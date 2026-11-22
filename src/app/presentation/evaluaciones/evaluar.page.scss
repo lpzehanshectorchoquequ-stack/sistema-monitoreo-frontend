@@ -555,3 +555,83 @@
     cursor: default;
   }
 }
+
+.pm-modo {
+  padding: 1.6rem;
+  margin-top: 1.6rem;
+  background: #fff;
+  border: 4px solid var(--c-primario);
+  border-radius: 28px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14);
+  animation: entrada 0.35s ease both;
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 1.4rem;
+    color: var(--c-primario-osc);
+  }
+}
+
+.pm-modo-opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.pm-modo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 1.4rem;
+  font-family: inherit;
+  color: var(--c-texto);
+  text-align: left;
+  background: var(--c-fondo);
+  border: 3px solid var(--c-claro);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  strong {
+    font-size: 1.25rem;
+  }
+
+  small {
+    font-size: 0.95rem;
+    color: var(--c-suave);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--c-primario);
+    transform: translateY(-4px);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.pm-modo-emoji {
+  font-size: 2.6rem;
+}
+
+.pm-info-test {
+  padding: 0.8rem 1.3rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.05rem;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.pm-borrador-chip {
+  padding: 0.15rem 0.7rem;
+  margin-left: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #8a6d00;
+  background: #fff3cd;
+  border-radius: 999px;
+}

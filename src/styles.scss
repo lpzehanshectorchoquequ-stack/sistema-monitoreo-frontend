@@ -911,3 +911,20 @@ body.tema-nina {
   font-size: 0.9rem;
   color: var(--c-suave);
 }
+
+.aviso-accion {
+  display: block;
+  padding: 1rem 1.4rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.1rem;
+  color: #6d4a00;
+  text-decoration: none;
+  background: linear-gradient(120deg, #fff3cd, #ffe39a);
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  animation: entrada 0.4s ease both;
+
+  strong {
+    margin-left: 0.4rem;
+  }
+}

@@ -40,6 +40,7 @@ export class ShellComponent implements OnInit {
           inicio,
           { etiqueta: 'Usuarios', icono: '👥', ruta: '/usuarios' },
           { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
+          { etiqueta: 'Tests', icono: '📋', ruta: '/tests' },
           { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
         ];
       case 'Psicologo':
@@ -47,6 +48,7 @@ export class ShellComponent implements OnInit {
           inicio,
           { etiqueta: 'Mis tutores', icono: '👨‍👩‍👧', ruta: '/usuarios' },
           { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
+          { etiqueta: 'Tests', icono: '📋', ruta: '/tests' },
           { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
           { etiqueta: 'Evaluaciones', icono: '🧠', ruta: '/evaluaciones' },
           { etiqueta: 'Citas', icono: '📅' },
@@ -56,6 +58,7 @@ export class ShellComponent implements OnInit {
         return [
           inicio,
           { etiqueta: 'Mi hijo/a', icono: '🧒', ruta: '/mis-hijos' },
+          { etiqueta: 'Evaluaciones', icono: '🧠', ruta: '/mis-evaluaciones' },
           { etiqueta: 'Citas', icono: '📅' },
         ];
       default:

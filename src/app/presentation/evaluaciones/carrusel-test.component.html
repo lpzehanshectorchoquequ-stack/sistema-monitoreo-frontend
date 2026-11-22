@@ -1,0 +1,80 @@
+<div class="car">
+  @if (!revision()) {
+    <div class="car-progreso">
+      <div class="car-barra"><div [style.width.%]="progreso()"></div></div>
+      <span>Pregunta {{ indice() + 1 }} de {{ total() }}</span>
+    </div>
+
+    @for (p of unaPregunta(); track p.id) {
+      <article class="car-tarjeta">
+        <span class="car-area">{{ area(p.subescala) }}</span>
+        <h2>{{ p.texto }}</h2>
+        <p class="car-ayuda">¿Con qué frecuencia ocurre? Elige una opción: solo puedes responder una vez.</p>
+
+        <div class="car-opciones">
+          @for (o of opciones; track o.valor) {
+            <button type="button" class="car-op" [attr.data-valor]="o.valor"
+                    [class.sel]="respuestas()[p.id] === o.valor" [disabled]="bloqueado()"
+                    (click)="responder(p.id, o.valor)">
+              <span class="car-emoji">{{ o.emoji }}</span>
+              <span class="car-texto">{{ o.etiqueta }}</span>
+            </button>
+          }
+        </div>
+      </article>
+    }
+  } @else {
+    <section class="car-revision">
+      <h2>✅ Revisa tus respuestas</h2>
+      <p>
+        Antes de enviar puedes cambiar hasta <strong>2 respuestas</strong>.
+        Te quedan <strong>{{ cambiosRestantes() }}</strong>.
+      </p>
+
+      <ol class="car-lista">
+        @for (p of preguntas(); track p.id) {
+          <li>
+            <div class="car-item">
+              <span class="car-num">{{ p.orden }}</span>
+              <div class="car-item-texto">
+                <p>{{ p.texto }}</p>
+                <span class="car-resp" [attr.data-valor]="respuestas()[p.id]">
+                  {{ emoji(respuestas()[p.id]) }} {{ etiqueta(respuestas()[p.id]) }}
+                  @if (fueCambiada(p.id)) {
+                    <small>(cambiada)</small>
+                  }
+                </span>
+              </div>
+              <button type="button" class="car-cambiar" [disabled]="!puedeCambiar(p.id)" (click)="abrirCambio(p.id)">
+                Cambiar
+              </button>
+            </div>
+
+            @if (editando() === p.id) {
+              <div class="car-opciones chico">
+                @for (o of opciones; track o.valor) {
+                  <button type="button" class="car-op" [attr.data-valor]="o.valor"
+                          [class.sel]="respuestas()[p.id] === o.valor" (click)="elegirCambio(p.id, o.valor)">
+                    <span class="car-emoji">{{ o.emoji }}</span>
+                    <span class="car-texto">{{ o.etiqueta }}</span>
+                  </button>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ol>
+
+      <label for="car-obs" class="car-label">Observaciones (opcional)</label>
+      <textarea id="car-obs" rows="3" appFiltro="texto" maxlength="500"
+                (input)="observaciones.set($any($event.target).value)"></textarea>
+      <small class="car-contador">{{ observaciones().length }}/500</small>
+
+      <div class="car-aviso">⚠️ Una vez que envíes las respuestas no podrás modificarlas.</div>
+
+      <button type="button" class="car-enviar" [disabled]="enviando()" (click)="enviar()">
+        {{ enviando() ? 'Enviando...' : '📨 Enviar respuestas' }}
+      </button>
+    </section>
+  }
+</div>

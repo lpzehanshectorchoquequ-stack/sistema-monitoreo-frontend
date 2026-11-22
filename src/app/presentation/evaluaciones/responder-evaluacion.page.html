@@ -1,0 +1,29 @@
+<div class="fl-wrap">
+  <app-boton-atras destino="/" />
+
+  @if (error()) {
+    <div class="fl-alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (detalle(); as d) {
+    <section class="fl-hero">
+      <div>
+        <h1>{{ d.instrumentoNombre }}</h1>
+        <p>Para {{ d.pacienteNombre }}</p>
+      </div>
+    </section>
+
+    @if (d.puedeResponder) {
+      <app-carrusel-test [preguntas]="d.preguntas" [enviando]="enviando()" (finalizar)="enviar($event)" />
+    } @else {
+      <section class="fl-card centro">
+        <div class="fl-emoji-grande">✅</div>
+        <h3>Este test ya no está pendiente</h3>
+        <p>Ya fue respondido o no tienes permiso para responderlo.</p>
+        <a class="fl-btn principal" [routerLink]="['/evaluaciones', d.id]">Ver el estado</a>
+      </section>
+    }
+  }
+</div>

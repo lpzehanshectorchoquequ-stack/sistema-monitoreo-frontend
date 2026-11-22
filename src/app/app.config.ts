@@ -16,6 +16,8 @@ import { PacienteHttpAdapter } from './infrastructure/paciente-http.adapter';
 import { UsuarioHttpAdapter } from './infrastructure/usuario-http.adapter';
 import { TestPort } from './domain/test.port';
 import { TestHttpAdapter } from './infrastructure/test-http.adapter';
+import { FlujoEvaluacionPort } from './domain/flujo-evaluacion.port';
+import { FlujoEvaluacionHttpAdapter } from './infrastructure/flujo-evaluacion-http.adapter';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,5 +30,6 @@ export const appConfig: ApplicationConfig = {
     { provide: UsuarioPort, useClass: UsuarioHttpAdapter },
     { provide: EstadisticaPort, useClass: EstadisticaHttpAdapter },
     { provide: TestPort, useClass: TestHttpAdapter },
+    { provide: FlujoEvaluacionPort, useClass: FlujoEvaluacionHttpAdapter },
   ],
 };

@@ -1,7 +1,8 @@
 <div class="pm-eval">
-  <app-boton-atras />
+  <app-boton-atras destino="/evaluaciones" />
+
   <div class="cabecera-pagina">
-    <h2>🧠 Evaluaciones</h2>
+    <h2>🧠 Nueva evaluación</h2>
   </div>
 
   <ol class="pm-pasos">
@@ -18,7 +19,7 @@
 
   @switch (paso()) {
     @case (1) {
-      <h3 class="pm-titulo">👋 ¿A quién vas a evaluar hoy?</h3>
+      <h3 class="pm-titulo">👋 ¿A quién vas a evaluar?</h3>
       @if (pacientes().length === 0) {
         <div class="pm-alerta">Aún no tienes pacientes. Registra uno primero en la sección Pacientes.</div>
       }
@@ -38,11 +39,11 @@
     }
 
     @case (2) {
-      <h3 class="pm-titulo">{{ avatar(paciente()!) }} {{ paciente()?.nombre }}: ¿qué quieres explorar?</h3>
+      <h3 class="pm-titulo">{{ avatar(paciente()!) }} {{ paciente()?.nombre }}: elige el test</h3>
       <div class="pm-rejilla pm-rejilla-test">
         @for (i of instrumentos(); track i.id) {
           <button type="button" class="pm-test" [attr.data-tipo]="i.trastorno"
-                  [class.sel]="elegidoId() === i.id" [disabled]="cargando()" (click)="elegirInstrumento(i)">
+                  [class.sel]="elegido()?.id === i.id" (click)="elegirInstrumento(i)">
             @if (i.estadoValidacion === 'BORRADOR') {
               <span class="pm-borrador">Borrador</span>
             }
@@ -52,12 +53,36 @@
             <span class="pm-test-datos">
               <span>📝 {{ i.totalPreguntas }} preguntas</span>
               <span>⏱ ~{{ minutos(i.totalPreguntas) }} min</span>
-              <span>👤 {{ i.quienResponde }}</span>
+              <span>👤 Responde: {{ i.quienResponde }}</span>
             </span>
-            <span class="pm-test-boton">{{ elegidoId() === i.id ? '✓ Elegido' : 'Comenzar →' }}</span>
+            <span class="pm-test-boton">{{ elegido()?.id === i.id ? '✓ Elegido' : 'Elegir' }}</span>
           </button>
         }
       </div>
+
+      @if (elegido(); as e) {
+        <section class="pm-modo" id="modo">
+          <h3>¿Cómo quieres aplicar "{{ e.nombre }}"?</h3>
+          <div class="pm-modo-opciones">
+            <button type="button" class="pm-modo-card" [disabled]="!puedeEnviarAlTutor() || cargando()"
+                    (click)="enviarAlTutor()">
+              <span class="pm-modo-emoji">📲</span>
+              <strong>Enviar al tutor</strong>
+              <small>
+                {{ puedeEnviarAlTutor()
+                  ? 'El tutor lo responde desde su cuenta y tú apruebas el resultado.'
+                  : 'Este test lo responde ' + e.quienResponde + ', por eso no se puede enviar al tutor.' }}
+              </small>
+            </button>
+            <button type="button" class="pm-modo-card" [disabled]="cargando()" (click)="responderAhora()">
+              <span class="pm-modo-emoji">🧑‍⚕️</span>
+              <strong>Responder yo ahora</strong>
+              <small>Respondes en esta pantalla, durante la consulta.</small>
+            </button>
+          </div>
+        </section>
+      }
+
       <div class="pm-acciones">
         <button type="button" class="pm-btn secundario" (click)="volver()">← Cambiar paciente</button>
       </div>
@@ -65,78 +90,13 @@
 
     @case (3) {
       @if (instrumento(); as inst) {
-        <div class="pm-progreso">
-          <div class="pm-barra"><div [style.width.%]="porcentaje()"></div></div>
-          <span>{{ contestadas() }} de {{ total() }} · {{ porcentaje() }}%</span>
-        </div>
-
-        <div class="pm-tarjeta">
-          <h3>{{ icono(inst.trastorno) }} {{ inst.nombre }}</h3>
-          <p class="pm-suave">Paciente: <strong>{{ paciente()?.nombre }}</strong> · Responde: {{ inst.quienResponde }}</p>
-          <p class="pm-suave">Marca con qué frecuencia ocurre cada situación.</p>
+        <div class="pm-info-test">
+          <strong>{{ inst.nombre }}</strong> · {{ paciente()?.nombre }}
           @if (inst.estadoValidacion === 'BORRADOR') {
-            <div class="pm-aviso">
-              ⚠️ Instrumento en borrador: preguntas y umbrales pendientes de validación clínica. Úsalo solo con datos de prueba.
-            </div>
+            <span class="pm-borrador-chip">Borrador</span>
           }
         </div>
-
-        @for (p of inst.preguntas; track p.id) {
-          <div class="pm-q" [id]="'q-' + p.id" [class.hecha]="respuestas()[p.id] !== undefined">
-            <div class="pm-q-cab">
-              <span class="pm-q-num">{{ respuestas()[p.id] !== undefined ? '✓' : p.orden }}</span>
-              <div>
-                <span class="pm-q-area">{{ area(p.subescala) }}</span>
-                <p class="pm-q-texto">{{ p.texto }}</p>
-              </div>
-            </div>
-            <div class="pm-ops">
-              @for (o of opciones; track o.valor) {
-                <button type="button" class="pm-op" [attr.data-valor]="o.valor"
-                        [class.sel]="respuestas()[p.id] === o.valor" (click)="responder(p.id, o.valor)">
-                  @if (respuestas()[p.id] === o.valor) {
-                    <span class="pm-op-check">✓</span>
-                  }
-                  <span class="pm-op-emoji">{{ o.emoji }}</span>
-                  <span class="pm-op-texto">{{ o.etiqueta }}</span>
-                </button>
-              }
-            </div>
-          </div>
-        }
-
-        <div class="pm-tarjeta">
-          @if (completo()) {
-            <div class="pm-listo">🎉 ¡Listo! Ya respondiste todo. Pulsa "Evaluar" para ver el resultado.</div>
-          }
-          <label for="obs" class="pm-label">Observaciones (opcional)</label>
-          <textarea id="obs" rows="3" class="pm-area" appFiltro="texto" maxlength="500"
-                    (input)="observaciones.set($any($event.target).value)"></textarea>
-          <small class="pm-suave">{{ observaciones().length }}/500</small>
-
-          <div class="pm-acciones">
-            <button type="button" class="pm-btn secundario" (click)="volver()">← Atrás</button>
-            <button type="button" class="pm-btn primario" [disabled]="!completo() || cargando()" (click)="enviar()">
-              {{ cargando() ? 'Evaluando...' : '✨ Evaluar' }}
-            </button>
-          </div>
-        </div>
-      }
-    }
-
-    @case (4) {
-      @if (resultado(); as r) {
-        <div class="pm-tarjeta">
-          <h3>🎯 Resultado de la evaluación</h3>
-          <p class="pm-suave">{{ r.pacienteNombre }} · {{ r.instrumentoNombre }} · {{ r.fecha }}</p>
-          @if (r.conclusion) {
-            <app-resultado [conclusion]="r.conclusion" />
-          }
-          <div class="pm-acciones">
-            <a class="pm-btn secundario" [routerLink]="['/pacientes', r.pacienteId, 'historial']">Ver historial</a>
-            <button type="button" class="pm-btn primario" (click)="nueva()">Nueva evaluación</button>
-          </div>
-        </div>
+        <app-carrusel-test [preguntas]="inst.preguntas" [enviando]="enviando()" (finalizar)="finalizar($event)" />
       }
     }
   }

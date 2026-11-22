@@ -1,0 +1,91 @@
+<div class="fl-wrap">
+  <app-boton-atras />
+
+  <section class="fl-hero">
+    <div>
+      <h1>🧠 {{ esTutor() ? 'Evaluaciones de mis hijos' : 'Evaluaciones' }}</h1>
+      <p>
+        {{ esTutor()
+          ? 'Aquí aparecen los tests que tu psicóloga te envía para responder, y sus resultados.'
+          : 'Envía tests a los tutores, revisa lo que responden y aprueba los resultados.' }}
+      </p>
+    </div>
+    @if (!esTutor()) {
+      <a class="fl-nuevo" routerLink="/evaluaciones/nueva">+ Nueva evaluación</a>
+    }
+  </section>
+
+  @if (aviso()) {
+    <div class="fl-exito">🎉 {{ aviso() }}</div>
+  }
+  @if (error()) {
+    <div class="fl-alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (lista().length === 0) {
+    <div class="fl-vacio">
+      <div class="fl-vacio-emoji">🌱</div>
+      <h3>Aún no hay evaluaciones</h3>
+      @if (esTutor()) {
+        <p>Cuando tu psicóloga te envíe un test, aparecerá aquí.</p>
+      } @else {
+        <p>Pulsa "Nueva evaluación" para enviar o aplicar el primer test.</p>
+      }
+    </div>
+  } @else {
+    <div class="fl-tabs">
+      <button type="button" class="fl-tab" [class.sel]="estado() === 'TODAS'" (click)="estado.set('TODAS')">
+        Todas <span class="cuenta">{{ lista().length }}</span>
+      </button>
+      <button type="button" class="fl-tab" [class.sel]="estado() === 'PENDIENTE'" (click)="estado.set('PENDIENTE')">
+        ⏳ {{ esTutor() ? 'Por responder' : 'Esperando respuestas' }} <span class="cuenta">{{ conteo().PENDIENTE }}</span>
+      </button>
+      <button type="button" class="fl-tab" [class.sel]="estado() === 'POR_REVISAR'" (click)="estado.set('POR_REVISAR')">
+        📝 {{ esTutor() ? 'Enviadas' : 'Por revisar' }} <span class="cuenta">{{ conteo().POR_REVISAR }}</span>
+      </button>
+      <button type="button" class="fl-tab" [class.sel]="estado() === 'APROBADA'" (click)="estado.set('APROBADA')">
+        ✅ Aprobadas <span class="cuenta">{{ conteo().APROBADA }}</span>
+      </button>
+    </div>
+
+    <app-buscador [(valor)]="busqueda" placeholder="Buscar por niño/a o por test..." />
+
+    @if (visibles().length === 0) {
+      <div class="fl-vacio"><p>No hay evaluaciones en esta categoría.</p></div>
+    }
+
+    <div class="fl-lista">
+      @for (e of visibles(); track e.id) {
+        <article class="fl-item">
+          <div class="fl-emoji">{{ icono(e.trastorno) }}</div>
+          <div class="fl-info">
+            <strong>{{ e.instrumentoNombre }}</strong>
+            <span>{{ e.pacienteNombre }} · {{ e.fecha }}</span>
+            <div class="fl-chips">
+              <span class="fl-estado" [attr.data-estado]="e.estado">{{ etiquetaEstado[e.estado] }}</span>
+              @if (e.nivel) {
+                <span [class]="'fl-nivel nv-' + e.nivel">{{ etiquetaNivel[e.nivel] ?? e.nivel }}</span>
+              }
+            </div>
+          </div>
+          <div class="fl-acciones">
+            @if (esTutor() && e.estado === 'PENDIENTE') {
+              <a class="fl-btn principal" [routerLink]="['/evaluaciones', e.id, 'responder']">Responder ahora →</a>
+            } @else if (!esTutor() && e.estado === 'POR_REVISAR') {
+              <a class="fl-btn principal" [routerLink]="['/evaluaciones', e.id]">Revisar y aprobar</a>
+            } @else {
+              <a class="fl-btn claro" [routerLink]="['/evaluaciones', e.id]">
+                {{ e.estado === 'APROBADA' ? 'Ver resultado' : 'Ver' }}
+              </a>
+            }
+            @if (!esTutor() && e.estado === 'PENDIENTE') {
+              <button type="button" class="fl-btn peligro" (click)="cancelar(e)">Cancelar</button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

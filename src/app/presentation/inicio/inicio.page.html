@@ -17,6 +17,19 @@
     <div class="hero-emoji">🧩</div>
   </section>
 
+  @if (s.rol === 'Tutor' && pendientes() > 0) {
+    <a class="aviso-accion" routerLink="/mis-evaluaciones">
+      📝 Tienes {{ pendientes() }} {{ pendientes() === 1 ? 'evaluación pendiente' : 'evaluaciones pendientes' }} por responder.
+      <strong>Responder ahora →</strong>
+    </a>
+  }
+  @if (s.rol === 'Psicologo' && porRevisar() > 0) {
+    <a class="aviso-accion" routerLink="/evaluaciones">
+      📝 Hay {{ porRevisar() }} {{ porRevisar() === 1 ? 'evaluación esperando' : 'evaluaciones esperando' }} tu revisión.
+      <strong>Revisar ahora →</strong>
+    </a>
+  }
+
   <div class="tarjetas">
     @switch (s.rol) {
       @case ('Admin') {
@@ -78,6 +91,11 @@
           <div class="icono">🧒</div>
           <strong>Mi hijo/a</strong>
           <span>Su perfil, fortalezas y áreas de apoyo</span>
+        </a>
+        <a class="tarjeta-enlace" routerLink="/mis-evaluaciones">
+          <div class="icono">🧠</div>
+          <strong>Evaluaciones</strong>
+          <span>Tests para responder y sus resultados</span>
         </a>
         <div class="tarjeta-enlace pronto">
           <div class="icono">📅</div>

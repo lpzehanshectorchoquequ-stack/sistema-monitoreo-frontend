@@ -43,7 +43,7 @@
                 <td>{{ p.tutorNombre }}</td>
                 <td>{{ p.motivoConsulta }}</td>
                 <td class="acciones">
-                  <a class="btn btn-primario" routerLink="/evaluaciones" [queryParams]="{ paciente: p.id }">Evaluar</a>
+                  <a class="btn btn-primario" routerLink="/evaluaciones/nueva" [queryParams]="{ paciente: p.id }">Evaluar</a>
                   <a class="btn btn-secundario" [routerLink]="['/pacientes', p.id, 'historial']">Historial</a>
                   <a class="btn btn-secundario" [routerLink]="['/evolucion', p.id]">Evolución</a>
                   <a class="btn btn-secundario" [routerLink]="['/pacientes', p.id, 'editar']">Editar</a>

@@ -3,7 +3,7 @@
   <div class="cabecera-pagina">
     <h2>📈 Historial de {{ paciente()?.nombre }}</h2>
     @if (paciente(); as p) {
-      <a class="btn btn-primario" routerLink="/evaluaciones" [queryParams]="{ paciente: p.id }">+ Nueva evaluación</a>
+      <a class="btn btn-primario" routerLink="/evaluaciones/nueva" [queryParams]="{ paciente: p.id }">+ Nueva evaluación</a>
     }
   </div>
 

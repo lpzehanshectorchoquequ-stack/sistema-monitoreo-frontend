@@ -1,13 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GestionarEvaluacionesUseCase } from '../../application/gestionar-evaluaciones.use-case';
+import { GestionarFlujoEvaluacionUseCase } from '../../application/gestionar-flujo-evaluacion.use-case';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
-import { Evaluacion, Instrumento, OPCIONES_RESPUESTA } from '../../domain/evaluacion.model';
+import { Instrumento } from '../../domain/evaluacion.model';
+import { EnvioRespuestas } from '../../domain/flujo-evaluacion.model';
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
-import { ResultadoComponent } from './resultado.component';
-import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 import { BotonAtrasComponent } from '../shared/boton-atras.component';
+import { CarruselTestComponent } from './carrusel-test.component';
 
 const ICONOS: Record<string, string> = { TDAH: '⚡', TEA: '🧩', APRENDIZAJE: '📚', OTRA: '🧠' };
 const SUBTITULOS: Record<string, string> = {
@@ -16,49 +17,33 @@ const SUBTITULOS: Record<string, string> = {
   APRENDIZAJE: 'Lectura, escritura y matemáticas',
   OTRA: 'Evaluación general',
 };
-const AREAS: Record<string, string> = {
-  INATENCION: 'Atención',
-  HIPERACTIVIDAD: 'Actividad',
-  SOCIAL: 'Social',
-  REPETITIVO: 'Rutinas',
-  LECTURA: 'Lectura',
-  ESCRITURA: 'Escritura',
-  MATEMATICAS: 'Matemáticas',
-};
 
 @Component({
   selector: 'app-evaluar',
-  imports: [ResultadoComponent, RouterLink, FiltroEntradaDirective, BotonAtrasComponent],
+  imports: [BotonAtrasComponent, CarruselTestComponent],
   templateUrl: './evaluar.page.html',
   styleUrl: './evaluar.page.scss',
 })
 export class EvaluarPage implements OnInit {
   private readonly evaluaciones = inject(GestionarEvaluacionesUseCase);
+  private readonly flujo = inject(GestionarFlujoEvaluacionUseCase);
   private readonly pacientesCasoUso = inject(GestionarPacientesUseCase);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   protected readonly paso = signal(1);
   protected readonly pacientes = signal<Paciente[]>([]);
   protected readonly instrumentos = signal<Instrumento[]>([]);
   protected readonly paciente = signal<Paciente | null>(null);
+  protected readonly elegido = signal<Instrumento | null>(null);
   protected readonly instrumento = signal<Instrumento | null>(null);
-  protected readonly elegidoId = signal<number | null>(null);
-  protected readonly respuestas = signal<Record<number, number>>({});
-  protected readonly observaciones = signal('');
-  protected readonly resultado = signal<Evaluacion | null>(null);
   protected readonly cargando = signal(false);
+  protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  protected readonly opciones = OPCIONES_RESPUESTA;
   protected readonly edad = calcularEdad;
-  protected readonly nombresPasos = ['Paciente', 'Evaluación', 'Cuestionario', 'Resultado'];
-
-  protected readonly contestadas = computed(() => Object.keys(this.respuestas()).length);
-  protected readonly total = computed(() => this.instrumento()?.preguntas.length ?? 0);
-  protected readonly completo = computed(() => this.total() > 0 && this.contestadas() === this.total());
-  protected readonly porcentaje = computed(() =>
-    this.total() === 0 ? 0 : Math.round((this.contestadas() / this.total()) * 100),
-  );
+  protected readonly nombresPasos = ['Paciente', 'Test', 'Cuestionario'];
+  protected readonly puedeEnviarAlTutor = computed(() => this.elegido()?.quienResponde === 'Tutor');
 
   ngOnInit(): void {
     this.evaluaciones
@@ -89,14 +74,6 @@ export class EvaluarPage implements OnInit {
     return SUBTITULOS[trastorno] ?? trastorno;
   }
 
-  protected area(subescala: string): string {
-    if (AREAS[subescala]) {
-      return AREAS[subescala];
-    }
-    const texto = subescala.replace(/_/g, ' ').toLowerCase();
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
-  }
-
   protected minutos(preguntas: number): number {
     return Math.max(1, Math.ceil(preguntas / 3));
   }
@@ -107,40 +84,8 @@ export class EvaluarPage implements OnInit {
   }
 
   protected elegirInstrumento(instrumento: Instrumento): void {
-    this.elegidoId.set(instrumento.id);
-    this.cargando.set(true);
-    this.error.set(null);
-    setTimeout(() => {
-      this.evaluaciones.obtenerInstrumento(instrumento.id).subscribe({
-        next: (completo) => {
-          this.instrumento.set(completo);
-          this.respuestas.set({});
-          this.observaciones.set('');
-          this.paso.set(3);
-          this.cargando.set(false);
-        },
-        error: () => {
-          this.cargando.set(false);
-          this.error.set('No se pudo cargar el cuestionario');
-        },
-      });
-    }, 400);
-  }
-
-  protected responder(preguntaId: number, valor: number): void {
-    this.respuestas.update((actual) => ({ ...actual, [preguntaId]: valor }));
-    const preguntas = this.instrumento()?.preguntas ?? [];
-    const indice = preguntas.findIndex((p) => p.id === preguntaId);
-    const siguiente = preguntas[indice + 1];
-    if (siguiente) {
-      setTimeout(
-        () =>
-          document
-            .getElementById('q-' + siguiente.id)
-            ?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
-        450,
-      );
-    }
+    this.elegido.set(instrumento);
+    setTimeout(() => document.getElementById('modo')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
   }
 
   protected volver(): void {
@@ -148,44 +93,63 @@ export class EvaluarPage implements OnInit {
     this.paso.update((p) => Math.max(1, p - 1));
   }
 
-  protected enviar(): void {
-    const instrumento = this.instrumento();
+  protected enviarAlTutor(): void {
     const paciente = this.paciente();
-    if (!instrumento || !paciente || !this.completo()) {
+    const elegido = this.elegido();
+    if (!paciente || !elegido) {
       return;
     }
     this.cargando.set(true);
     this.error.set(null);
-
-    const datos = {
-      instrumentoId: instrumento.id,
-      respuestas: Object.entries(this.respuestas()).map(([id, valor]) => ({
-        preguntaId: Number(id),
-        valor,
-      })),
-      observaciones: this.observaciones(),
-    };
-
-    this.evaluaciones.aplicar(paciente.id, datos).subscribe({
-      next: (evaluacion) => {
-        this.resultado.set(evaluacion);
-        this.paso.set(4);
-        this.cargando.set(false);
-      },
+    this.flujo.asignar(paciente.id, elegido.id).subscribe({
+      next: () => this.router.navigate(['/evaluaciones'], { queryParams: { asignada: 1 } }),
       error: (e: HttpErrorResponse) => {
         this.cargando.set(false);
-        this.error.set(e.error?.mensaje ?? 'No se pudo guardar la evaluación');
+        this.error.set(e.error?.mensaje ?? 'No se pudo enviar la evaluación al tutor');
       },
     });
   }
 
-  protected nueva(): void {
-    this.paciente.set(null);
-    this.instrumento.set(null);
-    this.elegidoId.set(null);
-    this.respuestas.set({});
-    this.resultado.set(null);
+  protected responderAhora(): void {
+    const elegido = this.elegido();
+    if (!elegido) {
+      return;
+    }
+    this.cargando.set(true);
     this.error.set(null);
-    this.paso.set(1);
+    this.evaluaciones.obtenerInstrumento(elegido.id).subscribe({
+      next: (completo) => {
+        this.instrumento.set(completo);
+        this.paso.set(3);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.error.set('No se pudo cargar el cuestionario');
+      },
+    });
+  }
+
+  protected finalizar(envio: EnvioRespuestas): void {
+    const instrumento = this.instrumento();
+    const paciente = this.paciente();
+    if (!instrumento || !paciente) {
+      return;
+    }
+    this.enviando.set(true);
+    this.error.set(null);
+    this.evaluaciones
+      .aplicar(paciente.id, {
+        instrumentoId: instrumento.id,
+        respuestas: envio.respuestas,
+        observaciones: envio.observaciones,
+      })
+      .subscribe({
+        next: (evaluacion) => this.router.navigateByUrl(`/evaluaciones/${evaluacion.id}`),
+        error: (e: HttpErrorResponse) => {
+          this.enviando.set(false);
+          this.error.set(e.error?.mensaje ?? 'No se pudo guardar la evaluación');
+        },
+      });
   }
 }

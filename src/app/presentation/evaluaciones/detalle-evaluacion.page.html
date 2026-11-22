@@ -1,0 +1,115 @@
+<div class="fl-wrap">
+  <app-boton-atras destino="/" />
+
+  @if (error()) {
+    <div class="fl-alerta">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (detalle(); as d) {
+    <section class="fl-hero">
+      <div>
+        <h1>{{ d.instrumentoNombre }}</h1>
+        <p>{{ d.pacienteNombre }} · {{ d.fecha }}</p>
+      </div>
+      <span class="fl-estado" [attr.data-estado]="d.estado">{{ etiquetaEstado[d.estado] }}</span>
+    </section>
+
+    @if (enviado()) {
+      <div class="fl-exito">
+        🎉 ¡Listo! Tus respuestas se enviaron. Tu psicóloga las revisará y, cuando apruebe el resultado,
+        podrás verlo aquí.
+      </div>
+    }
+    @if (exito()) {
+      <div class="fl-exito">✓ {{ exito() }}</div>
+    }
+
+    @if (d.puedeResponder) {
+      <section class="fl-card centro">
+        <div class="fl-emoji-grande">📝</div>
+        <h3>Este test espera tus respuestas</h3>
+        <p>
+          Son preguntas cortas, de una en una. Responde con tranquilidad: antes de enviar podrás
+          revisar tus respuestas y cambiar hasta 2.
+        </p>
+        <a class="fl-btn principal" [routerLink]="['/evaluaciones', d.id, 'responder']">Empezar a responder →</a>
+      </section>
+    }
+
+    @if (d.estado === 'PENDIENTE' && !d.puedeResponder) {
+      <section class="fl-card centro">
+        <div class="fl-emoji-grande">⏳</div>
+        <h3>Esperando las respuestas</h3>
+        <p>Cuando el tutor las envíe, te aparecerán aquí para que las revises y apruebes.</p>
+      </section>
+    }
+
+    @if (d.estado === 'POR_REVISAR' && !d.puedeVerResultado) {
+      <section class="fl-card centro">
+        <div class="fl-emoji-grande">📨</div>
+        <h3>Tus respuestas fueron enviadas</h3>
+        <p>Tu psicóloga las está revisando. Cuando apruebe el resultado, lo verás en esta pantalla.</p>
+      </section>
+    }
+
+    @if (d.puedeVerResultado && d.conclusion) {
+      <section class="fl-card">
+        <div class="fl-meta">
+          @if (d.respondidoPor) {
+            <span>✍️ Respondió: {{ d.respondidoPor }}</span>
+          }
+          <span>🔁 Cambió {{ d.cambiosRespuestas }} {{ d.cambiosRespuestas === 1 ? 'respuesta' : 'respuestas' }}</span>
+          @if (d.aprobadoPor) {
+            <span>✅ Aprobó: {{ d.aprobadoPor }}</span>
+          }
+        </div>
+        <app-resultado [conclusion]="d.conclusion" [areas]="d.areas" />
+        @if (d.observaciones) {
+          <p><strong>Observaciones de quien respondió:</strong> {{ d.observaciones }}</p>
+        }
+      </section>
+
+      @if (d.comentarioPsicologa) {
+        <section class="fl-card">
+          <h3>💬 Comentario de la psicóloga</h3>
+          <p>{{ d.comentarioPsicologa }}</p>
+        </section>
+      }
+
+      <section class="fl-card">
+        <details>
+          <summary>Ver las respuestas una por una ({{ d.respuestas.length }})</summary>
+          <ul class="fl-respuestas">
+            @for (r of d.respuestas; track r.preguntaId) {
+              <li>
+                <span>{{ r.orden }}. {{ r.texto }}</span>
+                <span class="fl-resp" [attr.data-valor]="r.valor">{{ etiquetaRespuesta(r.valor) }}</span>
+              </li>
+            }
+          </ul>
+        </details>
+      </section>
+    }
+
+    @if (d.puedeAprobar) {
+      <section class="fl-card">
+        <h3>✅ Aprobar este resultado</h3>
+        <p>Revisa las respuestas y el resultado. Si estás de acuerdo, apruébalo: recién entonces el tutor podrá verlo.</p>
+        <label for="comentario"><strong>Comentario para el tutor (opcional)</strong></label>
+        <textarea id="comentario" rows="3" [formControl]="comentario" appFiltro="texto" maxlength="500"
+                  placeholder="Ej: Gracias por responder. Vamos a conversarlo en la próxima cita."></textarea>
+        <app-error-campo [control]="comentario" />
+        <p></p>
+        <button type="button" class="fl-btn principal" [disabled]="guardando()" (click)="aprobar()">
+          {{ guardando() ? 'Aprobando...' : 'Aprobar resultado' }}
+        </button>
+      </section>
+    }
+
+    @if (d.puedeVerResultado) {
+      <a class="fl-btn claro" [routerLink]="['/evolucion', d.pacienteId]">📈 Ver la evolución de {{ d.pacienteNombre }}</a>
+    }
+  }
+</div>

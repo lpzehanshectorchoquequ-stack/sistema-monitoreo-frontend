@@ -59,7 +59,30 @@ export const routes: Routes = [
         path: 'evaluaciones',
         canActivate: [rolGuard(['Psicologo', 'Admin'])],
         loadComponent: () =>
+          import('./presentation/evaluaciones/evaluaciones.page').then((m) => m.EvaluacionesPage),
+      },
+      {
+        path: 'evaluaciones/nueva',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
           import('./presentation/evaluaciones/evaluar.page').then((m) => m.EvaluarPage),
+      },
+      {
+        path: 'evaluaciones/:id',
+        loadComponent: () =>
+          import('./presentation/evaluaciones/detalle-evaluacion.page').then((m) => m.DetalleEvaluacionPage),
+      },
+      {
+        path: 'evaluaciones/:id/responder',
+        canActivate: [rolGuard(['Tutor', 'Psicologo'])],
+        loadComponent: () =>
+          import('./presentation/evaluaciones/responder-evaluacion.page').then((m) => m.ResponderEvaluacionPage),
+      },
+      {
+        path: 'mis-evaluaciones',
+        canActivate: [rolGuard(['Tutor'])],
+        loadComponent: () =>
+          import('./presentation/evaluaciones/evaluaciones.page').then((m) => m.EvaluacionesPage),
       },
       {
         path: 'mis-hijos',
