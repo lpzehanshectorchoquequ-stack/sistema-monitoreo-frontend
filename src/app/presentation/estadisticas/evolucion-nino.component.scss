@@ -2,24 +2,19 @@
   display: block;
 }
 
-.pm-evo {
-  max-width: 1050px;
-  margin: 0 auto;
-}
-
-.pm-evo-cab {
+.evo-cab {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.6rem 2rem;
+  padding: 1.4rem 1.8rem;
   margin-bottom: 1.2rem;
   color: #fff;
   background: linear-gradient(120deg, var(--c-primario), var(--c-primario-osc));
   border-radius: 28px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 
-  h1 {
+  h2 {
     margin: 0 0 0.3rem;
   }
 
@@ -29,7 +24,7 @@
   }
 }
 
-.pm-pdf {
+.evo-pdf {
   flex-shrink: 0;
   padding: 0.85rem 1.6rem;
   font-family: inherit;
@@ -47,15 +42,14 @@
   }
 }
 
-.pm-alerta {
+.evo-alerta {
   padding: 0.9rem 1rem;
-  margin-bottom: 1rem;
   color: #b71c1c;
   background: #ffe3e6;
   border-radius: 14px;
 }
 
-.pm-filtros {
+.evo-filtros {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -81,7 +75,7 @@
   }
 }
 
-.pm-limpiar {
+.evo-limpiar {
   padding: 0.55rem 1.1rem;
   font-family: inherit;
   font-weight: 800;
@@ -92,14 +86,14 @@
   cursor: pointer;
 }
 
-.pm-resumenes {
+.evo-resumenes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.1rem;
   margin-bottom: 1.2rem;
 }
 
-.pm-resumen {
+.evo-resumen {
   padding: 1.4rem;
   border-radius: 24px;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.09);
@@ -134,7 +128,7 @@
   }
 }
 
-.pm-cifras {
+.evo-cifras {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -160,13 +154,13 @@
   }
 }
 
-.pm-card {
+.evo-card {
   padding: 1.5rem;
   margin-bottom: 1.2rem;
+  overflow-x: auto;
   background: #fff;
   border-radius: 24px;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
 
   h3 {
     margin: 0 0 0.3rem;
@@ -174,12 +168,12 @@
   }
 }
 
-.pm-nota {
+.evo-nota {
   margin: 0 0 1rem;
   color: var(--c-suave);
 }
 
-.pm-tabla {
+.evo-tabla {
   width: 100%;
   border-collapse: collapse;
 
@@ -196,7 +190,7 @@
   }
 }
 
-.pm-nivel {
+.evo-nivel {
   padding: 0.25rem 0.8rem;
   font-size: 0.85rem;
   font-weight: 800;
@@ -218,7 +212,7 @@
   }
 }
 
-.pm-mini-barra {
+.evo-mini {
   display: inline-block;
   width: 90px;
   height: 10px;
@@ -234,7 +228,7 @@
   }
 }
 
-.pm-vacio {
+.evo-vacio {
   padding: 2.2rem 1rem;
   text-align: center;
   background: #fff;
@@ -252,12 +246,12 @@
   }
 }
 
-.pm-vacio-emoji {
+.evo-vacio-emoji {
   font-size: 3.6rem;
 }
 
 @media (max-width: 720px) {
-  .pm-evo-cab {
+  .evo-cab {
     flex-direction: column;
     align-items: flex-start;
   }

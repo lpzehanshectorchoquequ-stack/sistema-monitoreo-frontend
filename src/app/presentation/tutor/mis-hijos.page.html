@@ -1,60 +1,77 @@
 <div class="pm-wrap">
-  <app-boton-atras />
   @if (error()) {
     <div class="pm-alerta">{{ error() }}</div>
   }
 
   @if (cargando()) {
     <p>Cargando...</p>
-  } @else if (hijo(); as h) {
-    <section class="pm-banner">
-      <div class="pm-avatar">{{ avatar(h) }}</div>
-      <div class="pm-info">
-        <h1>{{ h.nombre }}</h1>
-        <div class="pm-chips">
-          <span>🎂 {{ edad(h.fechaNacimiento) }} años</span>
-          <span>👩‍⚕️ {{ h.psicologoNombre ?? 'Sin asignar' }}</span>
-        </div>
-        <a class="pm-evolucion" [routerLink]="['/evolucion', h.id]">📈 Ver evolución</a>
-        @if (h.motivoConsulta) {
-          <p class="pm-motivo">💬 {{ h.motivoConsulta }}</p>
-        }
-      </div>
-    </section>
-
-    <div class="pm-grid">
-      <article class="pm-card fuerte">
-        <div class="pm-icono">⭐</div>
-        <h3>Sus fortalezas</h3>
-        @if (h.fortalezas) {
-          <p>{{ h.fortalezas }}</p>
-        } @else {
-          <p class="pm-suave">Tu psicóloga aún no ha agregado observaciones. ¡Pronto verás aquí sus fortalezas!</p>
-        }
-      </article>
-
-      <article class="pm-card apoyo">
-        <div class="pm-icono">🌱</div>
-        <h3>Áreas en las que podemos apoyarle</h3>
-        @if (h.dificultades) {
-          <p>{{ h.dificultades }}</p>
-        } @else {
-          <p class="pm-suave">Tu psicóloga aún no ha agregado observaciones.</p>
-        }
-      </article>
-
-      <article class="pm-card pronto">
-        <div class="pm-icono">📅</div>
-        <h3>Citas</h3>
-        <p class="pm-suave">Pronto podrás solicitar citas y ver los horarios disponibles de su psicóloga.</p>
-      </article>
-    </div>
-  } @else {
+  } @else if (hijos().length === 0) {
     <section class="pm-vacio">
       <div class="pm-vacio-emoji">🧸</div>
       <h2>¡Registremos a tu peque!</h2>
       <p>Cuéntanos sobre tu hijo/a para que su psicóloga pueda acompañarle y tú puedas ver aquí su avance.</p>
       <a class="pm-boton" routerLink="/mis-hijos/registrar">Registrar a mi hijo/a</a>
     </section>
+  } @else {
+    <div class="pm-fila-top">
+      @if (hijos().length > 1) {
+        <div class="pm-selector">
+          @for (h of hijos(); track h.id) {
+            <button type="button" [class.sel]="seleccionadoId() === h.id" (click)="seleccionar(h)">
+              {{ avatar(h) }} {{ h.nombre }}
+            </button>
+          }
+        </div>
+      }
+      <a class="pm-mas" routerLink="/mis-hijos/registrar">＋ Registrar otro/a hijo/a</a>
+    </div>
+
+    @if (seleccionado(); as h) {
+      <section class="pm-banner">
+        <div class="pm-avatar">{{ avatar(h) }}</div>
+        <div class="pm-info">
+          <h1>{{ h.nombre }}</h1>
+          <div class="pm-chips">
+            <span>🎂 {{ edad(h.fechaNacimiento) }} años</span>
+            <span>👩‍⚕️ {{ h.psicologoNombre ?? 'Sin asignar' }}</span>
+          </div>
+          @if (h.motivoConsulta) {
+            <p class="pm-motivo">💬 {{ h.motivoConsulta }}</p>
+          }
+        </div>
+      </section>
+
+      <div class="pm-grid">
+        <article class="pm-card fuerte">
+          <div class="pm-icono">⭐</div>
+          <h3>Sus fortalezas</h3>
+          @if (h.fortalezas) {
+            <p>{{ h.fortalezas }}</p>
+          } @else {
+            <p class="pm-suave">Tu psicóloga aún no ha agregado observaciones. ¡Pronto verás aquí sus fortalezas!</p>
+          }
+        </article>
+
+        <article class="pm-card apoyo">
+          <div class="pm-icono">🌱</div>
+          <h3>Áreas en las que podemos apoyarle</h3>
+          @if (h.dificultades) {
+            <p>{{ h.dificultades }}</p>
+          } @else {
+            <p class="pm-suave">Tu psicóloga aún no ha agregado observaciones.</p>
+          }
+        </article>
+
+        <a class="pm-card eval" routerLink="/mis-evaluaciones">
+          <div class="pm-icono">🧠</div>
+          <h3>Evaluaciones</h3>
+          <p>Mira los tests que tienes por responder y los resultados aprobados.</p>
+        </a>
+      </div>
+
+      <section class="pm-evo-seccion">
+        <app-evolucion-nino [pacienteId]="h.id" titulo="Evolución y avances" />
+      </section>
+    }
   }
 </div>

@@ -1,13 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Paciente, calcularEdad } from '../../domain/paciente.model';
+import { EvolucionNinoComponent } from '../estadisticas/evolucion-nino.component';
 import { TemaService } from '../shared/tema.service';
-import { BotonAtrasComponent } from '../shared/boton-atras.component';
 
 @Component({
   selector: 'app-mis-hijos',
-  imports: [RouterLink, BotonAtrasComponent],
+  imports: [RouterLink, EvolucionNinoComponent],
   templateUrl: './mis-hijos.page.html',
   styleUrl: './mis-hijos.page.scss',
 })
@@ -15,7 +15,11 @@ export class MisHijosPage implements OnInit {
   private readonly casoUso = inject(GestionarPacientesUseCase);
   private readonly tema = inject(TemaService);
 
-  protected readonly hijo = signal<Paciente | null>(null);
+  protected readonly hijos = signal<Paciente[]>([]);
+  protected readonly seleccionadoId = signal<number | null>(null);
+  protected readonly seleccionado = computed(
+    () => this.hijos().find((h) => h.id === this.seleccionadoId()) ?? null,
+  );
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly edad = calcularEdad;
@@ -23,10 +27,9 @@ export class MisHijosPage implements OnInit {
   ngOnInit(): void {
     this.casoUso.misHijos().subscribe({
       next: (lista) => {
-        const primero = lista[0] ?? null;
-        this.hijo.set(primero);
-        if (primero) {
-          this.tema.aplicar(primero.genero);
+        this.hijos.set(lista);
+        if (lista.length > 0) {
+          this.seleccionar(lista[0]);
         }
         this.cargando.set(false);
       },
@@ -35,6 +38,11 @@ export class MisHijosPage implements OnInit {
         this.cargando.set(false);
       },
     });
+  }
+
+  protected seleccionar(hijo: Paciente): void {
+    this.seleccionadoId.set(hijo.id);
+    this.tema.aplicar(hijo.genero);
   }
 
   protected avatar(hijo: Paciente): string {

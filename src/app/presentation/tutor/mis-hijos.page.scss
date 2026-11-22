@@ -224,3 +224,60 @@
   background: #fff;
   border-radius: 999px;
 }
+
+.pm-fila-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.pm-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+
+  button {
+    padding: 0.6rem 1.3rem;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--c-primario-osc);
+    background: #fff;
+    border: 3px solid var(--c-claro);
+    border-radius: 999px;
+    cursor: pointer;
+
+    &.sel {
+      color: #fff;
+      background: var(--c-primario);
+      border-color: var(--c-primario);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.pm-mas {
+  padding: 0.6rem 1.3rem;
+  font-weight: 800;
+  color: var(--c-primario-osc);
+  text-decoration: none;
+  background: var(--c-claro);
+  border-radius: 999px;
+}
+
+a.pm-card {
+  display: block;
+  text-decoration: none;
+}
+
+.pm-card.eval {
+  color: #1d3a63;
+  background: linear-gradient(145deg, #dcebff, #c4dcff);
+}
+
+.pm-evo-seccion {
+  margin-top: 1.8rem;
+}
