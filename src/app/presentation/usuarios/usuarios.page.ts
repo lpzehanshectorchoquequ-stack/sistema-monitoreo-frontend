@@ -62,6 +62,7 @@ export class UsuariosPage implements OnInit {
 
   protected readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
+    apellido: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
     correo: ['', [Validators.required, correoValido(), Validators.maxLength(100)]],
     rol: ['', Validators.required],
   });
@@ -98,7 +99,7 @@ export class UsuariosPage implements OnInit {
 
   protected abrirFormulario(): void {
     this.error.set(null);
-    this.form.reset({ nombre: '', correo: '', rol: this.esAdmin() ? '' : 'Tutor' });
+    this.form.reset({ nombre: '', apellido: '', correo: '', rol: this.esAdmin() ? '' : 'Tutor' });
     this.mostrandoForm.set(true);
   }
 

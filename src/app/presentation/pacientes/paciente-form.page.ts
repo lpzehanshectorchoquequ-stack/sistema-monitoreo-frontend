@@ -4,14 +4,19 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
 import { Tutor } from '../../domain/paciente.model';
-import { fechaNacimientoValida, nombreValido, rangoFechaNacimiento, textoValido } from '../shared/validadores';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 import { ErrorCampoComponent } from '../shared/error-campo.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
-import { BotonAtrasComponent } from '../shared/boton-atras.component';
+import {
+  fechaNacimientoValida,
+  nombreValido,
+  rangoFechaNacimiento,
+  textoValido,
+} from '../shared/validadores';
 
 @Component({
   selector: 'app-paciente-form',
-  imports: [ReactiveFormsModule, RouterLink, ErrorCampoComponent, FiltroEntradaDirective, BotonAtrasComponent],
+  imports: [ReactiveFormsModule, RouterLink, BotonAtrasComponent, ErrorCampoComponent, FiltroEntradaDirective],
   templateUrl: './paciente-form.page.html',
 })
 export class PacienteFormPage implements OnInit {
@@ -26,8 +31,9 @@ export class PacienteFormPage implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly rango = rangoFechaNacimiento();
 
-    protected readonly form = this.fb.nonNullable.group({
+  protected readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
+    apellido: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
     fechaNacimiento: ['', [Validators.required, fechaNacimientoValida()]],
     genero: [''],
     motivoConsulta: ['', [textoValido(), Validators.maxLength(500)]],
@@ -45,7 +51,8 @@ export class PacienteFormPage implements OnInit {
       this.casoUso.obtener(Number(idRuta)).subscribe({
         next: (p) =>
           this.form.patchValue({
-            nombre: p.nombre,
+            nombre: p.nombrePila,
+            apellido: p.apellido,
             fechaNacimiento: p.fechaNacimiento,
             genero: p.genero ?? '',
             motivoConsulta: p.motivoConsulta ?? '',

@@ -1,6 +1,8 @@
 export interface Paciente {
   id: number;
-  nombre: string;
+  nombre: string; // nombre completo, para mostrar
+  nombrePila: string;
+  apellido: string;
   fechaNacimiento: string; // formato AAAA-MM-DD
   genero: string | null;
   motivoConsulta: string | null;
@@ -13,6 +15,7 @@ export interface Paciente {
 
 export interface PacienteDatos {
   nombre: string;
+  apellido: string;
   fechaNacimiento: string;
   motivoConsulta: string;
   tutorId: number;
@@ -23,6 +26,7 @@ export interface PacienteDatos {
 
 export interface HijoDatos {
   nombre: string;
+  apellido: string;
   fechaNacimiento: string;
   genero: string;
   motivoConsulta: string;

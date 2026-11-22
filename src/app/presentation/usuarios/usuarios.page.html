@@ -1,4 +1,5 @@
 <div class="pm-usr">
+  <app-boton-atras />
   <section class="pm-hero2">
     <div>
       <h1>{{ esAdmin() ? '👥 Usuarios' : '👨‍👩‍👧 Mis tutores' }}</h1>
@@ -21,9 +22,14 @@
 
       <div class="pm-campos">
         <div class="pm-campo">
-          <label for="nombre">Nombre completo</label>
+          <label for="nombre">Nombre(s)</label>
           <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100" autocomplete="off" />
           <app-error-campo [control]="form.controls.nombre" />
+        </div>
+        <div class="pm-campo">
+          <label for="apellido">Apellido(s)</label>
+          <input id="apellido" type="text" formControlName="apellido" appFiltro="nombre" maxlength="100" autocomplete="off" />
+          <app-error-campo [control]="form.controls.apellido" />
         </div>
         <div class="pm-campo">
           <label for="correo">Correo</label>
@@ -67,8 +73,12 @@
       <p>Pulsa "Nueva cuenta" para crear la primera.</p>
     </div>
   } @else {
+    <app-buscador [(valor)]="filtro" placeholder="Buscar por nombre o correo..." />
+    @if (visibles().length === 0) {
+      <div class="pm-vacio"><p>No hay resultados para "{{ filtro() }}".</p></div>
+    }
     <div class="pm-lista">
-      @for (u of usuarios(); track u.id) {
+      @for (u of visibles(); track u.id) {
         <article class="pm-user" [class.inactivo]="!u.activo">
           <div class="pm-user-avatar">{{ avatar(u.rol) }}</div>
           <div class="pm-user-info">

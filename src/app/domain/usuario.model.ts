@@ -1,6 +1,8 @@
 export interface Usuario {
   id: number;
-  nombre: string;
+  nombre: string; // nombre completo, para mostrar
+  nombrePila: string;
+  apellido: string;
   correo: string;
   rol: string;
   activo: boolean;
@@ -15,6 +17,7 @@ export interface UsuarioCreado {
 
 export interface UsuarioDatos {
   nombre: string;
+  apellido: string;
   correo: string;
   rol: string;
 }

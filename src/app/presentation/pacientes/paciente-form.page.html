@@ -1,12 +1,20 @@
 <div class="contenedor contenedor-angosto">
+  <app-boton-atras destino="/pacientes" />
+
   <div class="cabecera-pagina">
     <h2>{{ id() === null ? '🧒 Nuevo paciente' : '✏️ Editar paciente' }}</h2>
   </div>
 
   <form class="tarjeta-blanca formulario" [formGroup]="form" (ngSubmit)="guardar()">
-    <label for="nombre">Nombre completo</label>
-    <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100" autocomplete="off" />
+    <label for="nombre">Nombre(s)</label>
+    <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100"
+           autocomplete="off" placeholder="Ej: Juan Carlos" />
     <app-error-campo [control]="form.controls.nombre" />
+
+    <label for="apellido">Apellido(s)</label>
+    <input id="apellido" type="text" formControlName="apellido" appFiltro="nombre" maxlength="100"
+           autocomplete="off" placeholder="Ej: Pérez Mamani" />
+    <app-error-campo [control]="form.controls.apellido" />
 
     <label for="fechaNacimiento">Fecha de nacimiento</label>
     <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [min]="rango.min" [max]="rango.max" />

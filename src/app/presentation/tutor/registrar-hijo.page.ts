@@ -1,17 +1,22 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { GestionarPacientesUseCase } from '../../application/gestionar-pacientes.use-case';
+import { BotonAtrasComponent } from '../shared/boton-atras.component';
 import { ErrorCampoComponent } from '../shared/error-campo.component';
 import { FiltroEntradaDirective } from '../shared/filtro-entrada.directive';
 import { TemaService } from '../shared/tema.service';
-import { fechaNacimientoValida, nombreValido, rangoFechaNacimiento, textoValido } from '../shared/validadores';
-import { BotonAtrasComponent } from '../shared/boton-atras.component';
+import {
+  fechaNacimientoValida,
+  nombreValido,
+  rangoFechaNacimiento,
+  textoValido,
+} from '../shared/validadores';
 
 @Component({
   selector: 'app-registrar-hijo',
-  imports: [ReactiveFormsModule, ErrorCampoComponent, FiltroEntradaDirective, BotonAtrasComponent],
+  imports: [ReactiveFormsModule, BotonAtrasComponent, ErrorCampoComponent, FiltroEntradaDirective],
   templateUrl: './registrar-hijo.page.html',
   styleUrl: './registrar-hijo.page.scss',
 })
@@ -28,6 +33,7 @@ export class RegistrarHijoPage {
 
   protected readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
+    apellido: ['', [Validators.required, nombreValido(), Validators.maxLength(100)]],
     fechaNacimiento: ['', [Validators.required, fechaNacimientoValida()]],
     genero: ['', Validators.required],
     motivoConsulta: ['', [textoValido(), Validators.maxLength(500)]],

@@ -1,4 +1,6 @@
 <div class="pm-registro">
+  <app-boton-atras />
+
   <section class="pm-hero">
     <span class="pm-hero-emoji">{{ genero() === 'NINA' ? '👧' : genero() === 'NINO' ? '👦' : '🧸' }}</span>
     <div>
@@ -32,17 +34,24 @@
     <h3 class="pm-titulo"><span class="pm-n">2</span> Cuéntanos sobre tu peque</h3>
     <div class="pm-campos">
       <div class="pm-campo">
-        <label for="nombre">Nombre</label>
+        <label for="nombre">Nombre(s)</label>
         <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100"
                autocomplete="off" placeholder="¿Cómo se llama?" />
         <app-error-campo [control]="form.controls.nombre" />
       </div>
       <div class="pm-campo">
-        <label for="fechaNacimiento">Fecha de nacimiento</label>
-        <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [min]="rango.min" [max]="rango.max" />
-        <small class="pista">Edad permitida: de 6 a 12 años</small>
-        <app-error-campo [control]="form.controls.fechaNacimiento" />
+        <label for="apellido">Apellido(s)</label>
+        <input id="apellido" type="text" formControlName="apellido" appFiltro="nombre" maxlength="100"
+               autocomplete="off" placeholder="Sus apellidos" />
+        <app-error-campo [control]="form.controls.apellido" />
       </div>
+    </div>
+
+    <div class="pm-campo">
+      <label for="fechaNacimiento">Fecha de nacimiento</label>
+      <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [min]="rango.min" [max]="rango.max" />
+      <small class="pista">Edad permitida: de 6 a 12 años</small>
+      <app-error-campo [control]="form.controls.fechaNacimiento" />
     </div>
 
     <div class="pm-campo">
