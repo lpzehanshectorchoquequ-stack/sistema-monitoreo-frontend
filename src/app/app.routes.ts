@@ -154,6 +154,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./presentation/sistema/bitacora.page').then((m) => m.BitacoraPage),
       },
+      {
+        path: 'respaldos',
+        canActivate: [rolGuard(['Admin'])],
+        loadComponent: () =>
+          import('./presentation/sistema/respaldos.page').then((m) => m.RespaldosPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

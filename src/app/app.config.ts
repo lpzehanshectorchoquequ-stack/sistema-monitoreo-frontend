@@ -22,6 +22,8 @@ import { FlujoEvaluacionHttpAdapter } from './infrastructure/flujo-evaluacion-ht
 import { PacienteHttpAdapter } from './infrastructure/paciente-http.adapter';
 import { TestHttpAdapter } from './infrastructure/test-http.adapter';
 import { UsuarioHttpAdapter } from './infrastructure/usuario-http.adapter';
+import { RespaldoPort } from './domain/respaldo.port';
+import { RespaldoHttpAdapter } from './infrastructure/respaldo-http.adapter';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,5 +39,6 @@ export const appConfig: ApplicationConfig = {
     { provide: FlujoEvaluacionPort, useClass: FlujoEvaluacionHttpAdapter },
     { provide: CitaPort, useClass: CitaHttpAdapter },
     { provide: BitacoraPort, useClass: BitacoraHttpAdapter },
+    { provide: RespaldoPort, useClass: RespaldoHttpAdapter },
   ],
 };

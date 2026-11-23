@@ -1,0 +1,66 @@
+<div class="rs-wrap">
+  <app-boton-atras />
+
+  <section class="rs-hero">
+    <div>
+      <h1>🛡️ Respaldos</h1>
+      <p>Copias de seguridad de la base de datos. Cada día se crea una automática y puedes crear una manual cuando quieras.</p>
+    </div>
+    <button type="button" class="rs-crear" [disabled]="creando()" (click)="crear()">
+      {{ creando() ? '⏳ Creando...' : '➕ Crear respaldo' }}
+    </button>
+  </section>
+
+  @if (error()) {
+    <div class="rs-alerta">{{ error() }}</div>
+  }
+  @if (exito()) {
+    <div class="rs-exito">{{ exito() }}</div>
+  }
+
+  <div class="rs-kpis">
+    <div class="rs-kpi a"><span>🗂️</span><strong>{{ total() }}</strong><small>Respaldos guardados</small></div>
+    <div class="rs-kpi b"><span>✋</span><strong>{{ manuales() }}</strong><small>Manuales</small></div>
+    <div class="rs-kpi c"><span>🤖</span><strong>{{ automaticos() }}</strong><small>Automáticos</small></div>
+    <div class="rs-kpi d"><span>💾</span><strong>{{ tamano(espacioTotal()) }}</strong><small>Espacio usado</small></div>
+    <div class="rs-kpi e">
+      <span>🕒</span>
+      <strong class="chico">{{ ultimo() ? fecha(ultimo()!.fecha) : 'Ninguno aún' }}</strong>
+      <small>Último respaldo</small>
+    </div>
+  </div>
+
+  <section class="rs-lista">
+    <h3>📋 Historial de respaldos</h3>
+
+    @if (cargando()) {
+      <p class="rs-vacio">Cargando...</p>
+    } @else if (respaldos().length === 0) {
+      <p class="rs-vacio">Todavía no hay respaldos. Crea el primero con el botón de arriba.</p>
+    } @else {
+      <table class="rs-tabla">
+        <thead>
+          <tr><th>Archivo</th><th>Tipo</th><th>Fecha</th><th>Tamaño</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (r of respaldos(); track r.nombre) {
+            <tr>
+              <td class="rs-nombre">{{ r.nombre }}</td>
+              <td>
+                <span class="rs-tipo" [class.auto]="r.tipo === 'auto'">
+                  {{ r.tipo === 'auto' ? '🤖 Automático' : '✋ Manual' }}
+                </span>
+              </td>
+              <td>{{ fecha(r.fecha) }}</td>
+              <td>{{ tamano(r.tamanoBytes) }}</td>
+              <td class="rs-acciones">
+                <button type="button" class="rs-btn" (click)="descargar(r)">⬇️ Descargar</button>
+                <button type="button" class="rs-btn peligro" (click)="eliminar(r)">🗑️ Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+</div>
