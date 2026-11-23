@@ -1,0 +1,110 @@
+<div class="ct-wrap">
+  <app-boton-atras />
+
+  <section class="ct-hero">
+    <div>
+      <h1>🕒 Mis horarios de atención</h1>
+      <p>Define cuándo atiendes. Los tutores solo podrán pedir cita en los espacios que dejes libres aquí.</p>
+    </div>
+  </section>
+
+  @if (error()) {
+    <div class="ct-alerta">{{ error() }}</div>
+  }
+  @if (exito()) {
+    <div class="ct-exito">✓ {{ exito() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else {
+    <section class="ct-card">
+      <h3><span class="ct-n">1</span> Tu semana</h3>
+      @if (totalBloques() === 0) {
+        <div class="ct-aviso">
+          Aún no tienes horarios. Agrega el primero aquí abajo 👇 para que los tutores puedan pedirte cita.
+        </div>
+      }
+      <div class="ct-semana">
+        @for (d of porDia(); track d.dia) {
+          <div class="ct-dia">
+            <h4>{{ d.nombre }}</h4>
+            @if (d.bloques.length === 0) {
+              <span class="vacio">Sin atención</span>
+            }
+            @for (b of d.bloques; track b.id) {
+              <div class="ct-bloque">
+                <div>
+                  <strong>{{ b.horaInicio }} – {{ b.horaFin }}</strong>
+                  <small>{{ cuantas(b) }} citas de {{ b.duracionMinutos }} min</small>
+                </div>
+                <button type="button" title="Quitar horario" (click)="quitar(b)">✕</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="ct-card">
+      <h3><span class="ct-n">2</span> Agregar un horario</h3>
+      <p>Elige el día, el rango de horas y cuánto dura cada cita. El sistema calcula los espacios solo.</p>
+
+      <div class="ct-pildoras">
+        @for (nombre of dias; track nombre; let i = $index) {
+          <button type="button" class="ct-pildora" [class.sel]="dia() === i + 1" (click)="dia.set(i + 1)">
+            {{ nombre }}
+          </button>
+        }
+      </div>
+
+      <div class="ct-campos">
+        <label>
+          Desde
+          <select [value]="inicio()" (change)="inicio.set($any($event.target).value)">
+            @for (h of horas; track h) {
+              <option [value]="h" [selected]="h === inicio()">{{ h }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Hasta
+          <select [value]="fin()" (change)="fin.set($any($event.target).value)">
+            @for (h of horas; track h) {
+              <option [value]="h" [selected]="h === fin()">{{ h }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Cada cita dura
+          <select (change)="duracion.set(+$any($event.target).value)">
+            @for (d of duraciones; track d) {
+              <option [value]="d" [selected]="d === duracion()">{{ d }} minutos</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="ct-fila-fin">
+        <button type="button" class="ct-btn principal" [disabled]="guardando()" (click)="agregar()">
+          {{ guardando() ? 'Agregando...' : '＋ Agregar horario' }}
+        </button>
+      </div>
+    </section>
+
+    <section class="ct-card">
+      <h3><span class="ct-n">3</span> Tarifa por consulta</h3>
+      <p>Es el costo que se guarda en cada cita nueva. Al marcar una cita como atendida puedes ajustarlo.</p>
+      <div class="ct-campos">
+        <label>
+          Costo en bolivianos (Bs)
+          <input type="number" min="0" max="9999.99" step="0.5" inputmode="decimal" [value]="tarifa()"
+                 (input)="tarifa.set($any($event.target).value)" />
+        </label>
+      </div>
+      <div class="ct-fila-fin">
+        <button type="button" class="ct-btn principal" (click)="guardarTarifa()">Guardar tarifa</button>
+      </div>
+    </section>
+  }
+</div>

@@ -125,6 +125,23 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./presentation/tests/test-editor.page').then((m) => m.TestEditorPage),
       },
+      {
+        path: 'horarios',
+        canActivate: [rolGuard(['Psicologo'])],
+        loadComponent: () =>
+          import('./presentation/citas/horarios.page').then((m) => m.HorariosPage),
+      },
+      {
+        path: 'citas',
+        loadComponent: () =>
+          import('./presentation/citas/citas.page').then((m) => m.CitasPage),
+      },
+      {
+        path: 'citas/nueva',
+        canActivate: [rolGuard(['Tutor', 'Psicologo'])],
+        loadComponent: () =>
+          import('./presentation/citas/nueva-cita.page').then((m) => m.NuevaCitaPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -18,6 +18,8 @@ import { TestPort } from './domain/test.port';
 import { TestHttpAdapter } from './infrastructure/test-http.adapter';
 import { FlujoEvaluacionPort } from './domain/flujo-evaluacion.port';
 import { FlujoEvaluacionHttpAdapter } from './infrastructure/flujo-evaluacion-http.adapter';
+import { CitaPort } from './domain/cita.port';
+import { CitaHttpAdapter } from './infrastructure/cita-http.adapter';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,5 +33,6 @@ export const appConfig: ApplicationConfig = {
     { provide: EstadisticaPort, useClass: EstadisticaHttpAdapter },
     { provide: TestPort, useClass: TestHttpAdapter },
     { provide: FlujoEvaluacionPort, useClass: FlujoEvaluacionHttpAdapter },
+    { provide: CitaPort, useClass: CitaHttpAdapter },
   ],
 };

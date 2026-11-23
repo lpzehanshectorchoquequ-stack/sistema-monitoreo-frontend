@@ -1,0 +1,104 @@
+<div class="ct-wrap">
+  <app-boton-atras destino="/citas" />
+
+  <section class="ct-hero">
+    <div>
+      <h1>{{ esTutor ? '📅 Pedir una cita' : '📅 Proponer una cita' }}</h1>
+      <p>
+        {{ esTutor
+          ? 'Elige un espacio libre de la psicóloga y cuéntale el motivo. Ella lo confirmará.'
+          : 'Elige un espacio libre de tu agenda. El tutor recibirá la propuesta y la aceptará o la rechazará.' }}
+      </p>
+    </div>
+  </section>
+
+  @if (error()) {
+    <div class="ct-alerta">{{ error() }}</div>
+  }
+
+  @if (hijos().length === 0) {
+    <div class="ct-vacio">
+      <p>
+        {{ esTutor ? 'Primero registra a tu hijo o hija en la sección "Mi hijo/a".' : 'Aún no tienes pacientes registrados.' }}
+      </p>
+    </div>
+  } @else {
+    @if (hijos().length > 1) {
+      <section class="ct-card">
+        <h3><span class="ct-n">1</span> ¿Para quién es la cita?</h3>
+        <div class="ct-hijos">
+          @for (h of hijos(); track h.id) {
+            <button type="button" class="ct-hijo" [class.sel]="hijo()?.id === h.id" (click)="elegirHijo(h)">
+              <span class="avatar">{{ avatar(h) }}</span>
+              <strong>{{ h.nombre }}</strong>
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    @if (hijo(); as h) {
+      <section class="ct-card">
+        <h3><span class="ct-n">{{ hijos().length > 1 ? 2 : 1 }}</span> Elige un espacio libre para {{ h.nombrePila }}</h3>
+
+        @if (cargandoEspacios()) {
+          <p>Buscando espacios libres...</p>
+        } @else if (dias().length === 0) {
+          <div class="ct-aviso">
+            Por ahora no hay espacios libres en los próximos 14 días.
+            {{ esTutor ? 'Comunícate con la psicóloga para que abra nuevos horarios.' : 'Agrega horarios en la sección "Horarios".' }}
+          </div>
+        } @else {
+          @for (d of dias(); track d.fecha) {
+            <div class="ct-dia-espacios">
+              <h4>📆 {{ d.etiqueta }}</h4>
+              <div class="ct-horas">
+                @for (e of d.espacios; track e.horaInicio) {
+                  <button type="button" class="ct-hora"
+                          [class.sel]="elegido()?.fecha === e.fecha && elegido()?.horaInicio === e.horaInicio"
+                          (click)="elegido.set(e)">
+                    {{ e.horaInicio }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        }
+      </section>
+
+      @if (elegido(); as e) {
+        <section class="ct-card">
+          <h3><span class="ct-n">{{ hijos().length > 1 ? 3 : 2 }}</span> Cuéntanos el motivo</h3>
+
+          <div class="ct-sugerencias">
+            @for (s of sugerencias; track s) {
+              <button type="button" (click)="usarSugerencia(s)">{{ s }}</button>
+            }
+          </div>
+
+          <textarea class="ct-motivo" rows="3" appFiltro="texto" maxlength="300" [value]="motivo()"
+                    placeholder="Ej: Quiero conversar sobre cómo le fue en la evaluación."
+                    (input)="motivo.set($any($event.target).value)"></textarea>
+          <small class="ct-contador">{{ motivo().length }}/300 · mínimo 5 caracteres</small>
+
+          @if (esTutor) {
+            <label class="ct-urgente">
+              <input type="checkbox" [checked]="urgente()" (change)="urgente.set($any($event.target).checked)" />
+              🚨 Es urgente (la psicóloga lo verá marcado)
+            </label>
+          }
+
+          <div class="ct-resumen">
+            📌 {{ h.nombre }} · {{ e.fecha }} · {{ e.horaInicio }} a {{ e.horaFin }}
+          </div>
+
+          <div class="ct-fila-fin">
+            <button type="button" class="ct-btn principal" [disabled]="!puedeEnviar()" (click)="enviar()">
+              {{ enviando() ? 'Enviando...' : esTutor ? '📨 Enviar solicitud' : '📨 Enviar propuesta' }}
+            </button>
+          </div>
+        </section>
+      }
+    }
+  }
+</div>

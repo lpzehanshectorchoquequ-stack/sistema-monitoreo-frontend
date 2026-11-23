@@ -1,0 +1,122 @@
+<div class="ct-wrap">
+  <app-boton-atras />
+
+  <section class="ct-hero">
+    <div>
+      <h1>📅 Citas</h1>
+      <p>
+        {{ esTutor()
+          ? 'Pide una cita en los espacios libres de la psicóloga y mira cómo va cada una.'
+          : esPsicologa()
+            ? 'Responde las solicitudes de los tutores, propón citas y marca las que ya atendiste.'
+            : 'Vista general de las citas de todas las psicólogas.' }}
+      </p>
+    </div>
+    @if (esTutor()) {
+      <a class="ct-nueva" routerLink="/citas/nueva">+ Pedir una cita</a>
+    }
+    @if (esPsicologa()) {
+      <a class="ct-nueva" routerLink="/citas/nueva">+ Proponer una cita</a>
+    }
+  </section>
+
+  @if (error()) {
+    <div class="ct-alerta">{{ error() }}</div>
+  }
+  @if (exito()) {
+    <div class="ct-exito">🎉 {{ exito() }}</div>
+  }
+
+  @if (cargando()) {
+    <p>Cargando...</p>
+  } @else if (citas().length === 0) {
+    <div class="ct-vacio">
+      <div class="ct-vacio-emoji">📅</div>
+      <h3>Aún no hay citas</h3>
+      @if (esTutor()) {
+        <p>Pulsa "Pedir una cita" para elegir uno de los espacios libres.</p>
+      } @else if (esPsicologa()) {
+        <p>Cuando un tutor pida una cita, la verás aquí. También puedes proponer una tú.</p>
+      }
+    </div>
+  } @else {
+    <div class="ct-tabs">
+      <button type="button" class="ct-tab" [class.sel]="pestana() === 'RESPONDER'" (click)="pestana.set('RESPONDER')">
+        ⏳ {{ esPsicologa() ? 'Por responder o atender' : 'Por responder' }}
+        <span class="cuenta">{{ porResponder().length }}</span>
+      </button>
+      <button type="button" class="ct-tab" [class.sel]="pestana() === 'PROXIMAS'" (click)="pestana.set('PROXIMAS')">
+        📆 Próximas <span class="cuenta">{{ proximas().length }}</span>
+      </button>
+      <button type="button" class="ct-tab" [class.sel]="pestana() === 'HISTORIAL'" (click)="pestana.set('HISTORIAL')">
+        🗂 Historial <span class="cuenta">{{ historial().length }}</span>
+      </button>
+    </div>
+
+    <app-buscador [(valor)]="busqueda" placeholder="Buscar por niño/a o por motivo..." />
+
+    @if (visibles().length === 0) {
+      <div class="ct-vacio"><p>No hay citas en esta categoría.</p></div>
+    }
+
+    <div class="ct-lista">
+      @for (c of visibles(); track c.id) {
+        <article class="ct-cita" [attr.data-estado]="c.estado">
+          <div class="ct-fecha">
+            <strong>{{ fechaDia(c.fecha) }}</strong>
+            <span>{{ fechaMes(c.fecha) }}</span>
+          </div>
+
+          <div class="ct-cuerpo">
+            <h4>{{ c.horaInicio }} – {{ c.horaFin }} · {{ c.pacienteNombre }}</h4>
+            <small>
+              {{ esPsicologa() ? 'Pidió: ' + c.solicitanteNombre : 'Psicóloga: ' + c.psicologoNombre }}
+              ({{ c.solicitanteRol === 'Psicologo' ? 'propuesta de la psicóloga' : 'solicitud del tutor' }})
+            </small>
+            <p>💬 {{ c.motivo }}</p>
+            <div class="ct-chips">
+              <span class="ct-chip" [attr.data-estado]="c.estado">{{ etiqueta[c.estado] }}</span>
+              @if (c.urgente) {
+                <span class="ct-chip urgente">🚨 Urgente</span>
+              }
+              <span class="ct-chip">💰 Bs {{ c.costo }}</span>
+            </div>
+            @if (c.comentarioPsicologa) {
+              <p><strong>Comentario de la psicóloga:</strong> {{ c.comentarioPsicologa }}</p>
+            }
+
+            @if (c.acciones.length > 0) {
+              <div class="ct-acciones">
+                @for (a of c.acciones; track a) {
+                  <button type="button" [class]="'ct-btn ' + claseAccion(a)" (click)="pedirAccion(c, a)">
+                    {{ etiquetaAccion(c, a) }}
+                  </button>
+                }
+              </div>
+            }
+
+            @if (panel(); as p) {
+              @if (p.cita.id === c.id) {
+                <div class="ct-panel">
+                  <strong>{{ etiquetaAccion(c, p.accion) }}</strong>
+                  @if (p.accion === 'ATENDIDA') {
+                    <label for="costo">Costo final de la consulta (Bs)</label>
+                    <input id="costo" type="number" min="0" max="9999.99" step="0.5" [value]="costo()"
+                           (input)="costo.set($any($event.target).value)" />
+                  }
+                  <label for="coment">Comentario para el tutor (opcional)</label>
+                  <textarea id="coment" rows="2" appFiltro="texto" maxlength="300"
+                            (input)="comentario.set($any($event.target).value)"></textarea>
+                  <div class="ct-fila-fin">
+                    <button type="button" class="ct-btn claro" (click)="cancelarPanel()">Volver</button>
+                    <button type="button" class="ct-btn principal" (click)="confirmarPanel()">Confirmar</button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

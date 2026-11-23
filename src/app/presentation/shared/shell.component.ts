@@ -42,6 +42,7 @@ export class ShellComponent implements OnInit {
           { etiqueta: 'Pacientes', icono: '🧒', ruta: '/pacientes' },
           { etiqueta: 'Tests', icono: '📋', ruta: '/tests' },
           { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
+          { etiqueta: 'Citas', icono: '📅', ruta: '/citas' },
         ];
       case 'Psicologo':
         return [
@@ -51,15 +52,15 @@ export class ShellComponent implements OnInit {
           { etiqueta: 'Tests', icono: '📋', ruta: '/tests' },
           { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
           { etiqueta: 'Evaluaciones', icono: '🧠', ruta: '/evaluaciones' },
-          { etiqueta: 'Citas', icono: '📅' },
-          { etiqueta: 'Horarios', icono: '🕒' },
+          { etiqueta: 'Citas', icono: '📅', ruta: '/citas' },
+          { etiqueta: 'Horarios', icono: '🕒', ruta: '/horarios' },
         ];
       case 'Tutor':
         return [
           inicio,
           { etiqueta: 'Mi hijo/a', icono: '🧒', ruta: '/mis-hijos' },
           { etiqueta: 'Evaluaciones', icono: '🧠', ruta: '/mis-evaluaciones' },
-          { etiqueta: 'Citas', icono: '📅' },
+          { etiqueta: 'Citas', icono: '📅', ruta: '/citas' },
         ];
       default:
         return [inicio];

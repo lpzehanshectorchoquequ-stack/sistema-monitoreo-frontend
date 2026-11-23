@@ -23,10 +23,28 @@
       <strong>Responder ahora →</strong>
     </a>
   }
+  @if (s.rol === 'Tutor' && citasPorResponder() > 0) {
+    <a class="aviso-accion" routerLink="/citas">
+      📅 La psicóloga te propuso {{ citasPorResponder() }} {{ citasPorResponder() === 1 ? 'cita' : 'citas' }}.
+      <strong>Ver ahora →</strong>
+    </a>
+  }
   @if (s.rol === 'Psicologo' && porRevisar() > 0) {
     <a class="aviso-accion" routerLink="/evaluaciones">
       📝 Hay {{ porRevisar() }} {{ porRevisar() === 1 ? 'evaluación esperando' : 'evaluaciones esperando' }} tu revisión.
       <strong>Revisar ahora →</strong>
+    </a>
+  }
+  @if (s.rol === 'Psicologo' && citasPorResponder() > 0) {
+    <a class="aviso-accion" routerLink="/citas">
+      📅 Hay {{ citasPorResponder() }} {{ citasPorResponder() === 1 ? 'solicitud de cita' : 'solicitudes de cita' }} esperando tu respuesta.
+      <strong>Responder ahora →</strong>
+    </a>
+  }
+  @if (s.rol === 'Psicologo' && citasPorAtender() > 0) {
+    <a class="aviso-accion" routerLink="/citas">
+      ✔ Tienes {{ citasPorAtender() }} {{ citasPorAtender() === 1 ? 'cita' : 'citas' }} por marcar como atendida.
+      <strong>Revisar →</strong>
     </a>
   }
 
@@ -53,6 +71,11 @@
           <strong>Estadísticas</strong>
           <span>Gráficas de pacientes y evaluaciones</span>
         </a>
+        <a class="tarjeta-enlace" routerLink="/citas">
+          <div class="icono">📅</div>
+          <strong>Citas</strong>
+          <span>Vista general de las citas</span>
+        </a>
       }
       @case ('Psicologo') {
         <a class="tarjeta-enlace" routerLink="/usuarios">
@@ -68,40 +91,45 @@
         <a class="tarjeta-enlace" routerLink="/evaluaciones">
           <div class="icono">🧠</div>
           <strong>Evaluaciones</strong>
-          <span>Aplicar cuestionarios y ver resultados</span>
+          <span>Enviar tests, revisar y aprobar resultados</span>
         </a>
         <a class="tarjeta-enlace" routerLink="/tests">
           <div class="icono">📋</div>
           <strong>Tests</strong>
           <span>Crear tests y administrar sus preguntas</span>
         </a>
+        <a class="tarjeta-enlace" routerLink="/citas">
+          <div class="icono">📅</div>
+          <strong>Citas</strong>
+          <span>Solicitudes, propuestas y agenda</span>
+        </a>
+        <a class="tarjeta-enlace" routerLink="/horarios">
+          <div class="icono">🕒</div>
+          <strong>Horarios</strong>
+          <span>Define cuándo atiendes y tu tarifa</span>
+        </a>
         <a class="tarjeta-enlace" routerLink="/estadisticas">
           <div class="icono">📊</div>
           <strong>Estadísticas</strong>
           <span>Gráficas de pacientes y evaluaciones</span>
         </a>
-        <div class="tarjeta-enlace pronto">
-          <div class="icono">📅</div>
-          <strong>Citas y horarios</strong>
-          <span>Agenda y disponibilidad (pronto)</span>
-        </div>
       }
       @case ('Tutor') {
         <a class="tarjeta-enlace" routerLink="/mis-hijos">
           <div class="icono">🧒</div>
           <strong>Mi hijo/a</strong>
-          <span>Su perfil, fortalezas y áreas de apoyo</span>
+          <span>Su perfil, avance y evolución</span>
         </a>
         <a class="tarjeta-enlace" routerLink="/mis-evaluaciones">
           <div class="icono">🧠</div>
           <strong>Evaluaciones</strong>
           <span>Tests para responder y sus resultados</span>
         </a>
-        <div class="tarjeta-enlace pronto">
+        <a class="tarjeta-enlace" routerLink="/citas">
           <div class="icono">📅</div>
           <strong>Citas</strong>
-          <span>Solicitar y ver citas (pronto)</span>
-        </div>
+          <span>Pedir una cita y ver las que tienes</span>
+        </a>
       }
     }
   </div>
