@@ -1,67 +1,59 @@
-<div class="contenedor contenedor-angosto">
-  <app-boton-atras destino="/pacientes" />
+<div class="contenedor">
+  <app-boton-atras />
 
   <div class="cabecera-pagina">
-    <h2>{{ id() === null ? '🧒 Nuevo paciente' : '✏️ Editar paciente' }}</h2>
+    <h2>🧒 Pacientes</h2>
+    <a class="btn btn-primario" routerLink="/pacientes/nuevo">+ Nuevo paciente</a>
   </div>
 
-  <form class="tarjeta-blanca formulario" [formGroup]="form" (ngSubmit)="guardar()">
-    <label for="nombre">Nombre(s)</label>
-    <input id="nombre" type="text" formControlName="nombre" appFiltro="nombre" maxlength="100"
-           autocomplete="off" placeholder="Ej: Juan Carlos" />
-    <app-error-campo [control]="form.controls.nombre" />
+  @if (error()) {
+    <div class="alerta">{{ error() }}</div>
+  }
 
-    <label for="apellido">Apellido(s)</label>
-    <input id="apellido" type="text" formControlName="apellido" appFiltro="nombre" maxlength="100"
-           autocomplete="off" placeholder="Ej: Pérez Mamani" />
-    <app-error-campo [control]="form.controls.apellido" />
-
-    <label for="fechaNacimiento">Fecha de nacimiento</label>
-    <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" [min]="rango.min" [max]="rango.max" />
-    <small class="pista">Edad permitida: de 6 a 12 años</small>
-    <app-error-campo [control]="form.controls.fechaNacimiento" />
-
-    <label>Género</label>
-    <div class="selector-genero">
-      <button type="button" class="gen gen-nino" [class.sel]="form.controls.genero.value === 'NINO'" (click)="elegirGenero('NINO')">👦 Niño</button>
-      <button type="button" class="gen gen-nina" [class.sel]="form.controls.genero.value === 'NINA'" (click)="elegirGenero('NINA')">👧 Niña</button>
+  @if (cargando()) {
+    <p>Cargando pacientes...</p>
+  } @else if (pacientes().length === 0) {
+    <div class="vacio">
+      <p>Aún no hay pacientes registrados.</p>
+      <a class="btn btn-primario" routerLink="/pacientes/nuevo">Registrar el primer paciente</a>
     </div>
+  } @else {
+    <app-buscador [(valor)]="filtro" placeholder="Buscar paciente o tutor por nombre..." />
 
-    <label for="tutorId">Tutor</label>
-    <select id="tutorId" formControlName="tutorId">
-      <option [ngValue]="0" disabled>Selecciona un tutor</option>
-      @for (t of tutores(); track t.id) {
-        <option [ngValue]="t.id">{{ t.nombre }} ({{ t.correo }})</option>
-      }
-    </select>
-    <app-error-campo [control]="form.controls.tutorId" />
-
-    <label for="motivoConsulta">Motivo de consulta</label>
-    <textarea id="motivoConsulta" rows="2" formControlName="motivoConsulta" appFiltro="texto" maxlength="500"></textarea>
-    <small class="contador">{{ form.controls.motivoConsulta.value.length }}/500</small>
-    <app-error-campo [control]="form.controls.motivoConsulta" />
-
-    <label for="fortalezas">⭐ Fortalezas (el tutor lo verá)</label>
-    <textarea id="fortalezas" rows="3" formControlName="fortalezas" appFiltro="texto" maxlength="500"
-              placeholder="Ej: muy creativo, aprende rápido con imágenes..."></textarea>
-    <small class="contador">{{ form.controls.fortalezas.value.length }}/500</small>
-    <app-error-campo [control]="form.controls.fortalezas" />
-
-    <label for="dificultades">🌱 Áreas de apoyo (el tutor lo verá)</label>
-    <textarea id="dificultades" rows="3" formControlName="dificultades" appFiltro="texto" maxlength="500"
-              placeholder="Ej: le cuesta mantener la atención en tareas largas..."></textarea>
-    <small class="contador">{{ form.controls.dificultades.value.length }}/500</small>
-    <app-error-campo [control]="form.controls.dificultades" />
-
-    @if (error()) {
-      <div class="alerta">{{ error() }}</div>
+    @if (visibles().length === 0) {
+      <div class="vacio">No hay resultados para "{{ filtro() }}". Revisa el nombre o borra la búsqueda.</div>
+    } @else {
+      <p class="pista">Mostrando {{ visibles().length }} de {{ pacientes().length }} pacientes</p>
+      <div class="tarjeta-blanca">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Edad</th>
+              <th>Tutor</th>
+              <th>Motivo de consulta</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of visibles(); track p.id) {
+              <tr>
+                <td>{{ p.nombre }}</td>
+                <td>{{ edad(p.fechaNacimiento) }} años</td>
+                <td>{{ p.tutorNombre }}</td>
+                <td>{{ p.motivoConsulta }}</td>
+                <td class="acciones">
+                  <a class="btn btn-primario" routerLink="/evaluaciones/nueva" [queryParams]="{ paciente: p.id }">Evaluar</a>
+                  <a class="btn btn-secundario" [routerLink]="['/pacientes', p.id, 'historial']">Historial</a>
+                  <a class="btn btn-secundario" [routerLink]="['/evolucion', p.id]">Evolución</a>
+                  <a class="btn btn-secundario" [routerLink]="['/pacientes', p.id, 'editar']">Editar</a>
+                  <button type="button" class="btn btn-peligro" (click)="eliminar(p)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
-
-    <div class="acciones-form">
-      <a class="btn btn-secundario" routerLink="/pacientes">Cancelar</a>
-      <button type="submit" class="btn btn-primario" [disabled]="guardando()">
-        {{ guardando() ? 'Guardando...' : 'Guardar' }}
-      </button>
-    </div>
-  </form>
+  }
 </div>
