@@ -1,0 +1,116 @@
+<div class="pc-wrap">
+  <app-boton-atras />
+
+  <nav class="tabs-est">
+    <a routerLink="/estadisticas" routerLinkActive="sel" [routerLinkActiveOptions]="{ exact: true }">🧒 Pacientes y evaluaciones</a>
+    <a routerLink="/estadisticas/citas" routerLinkActive="sel">📅 Citas e ingresos</a>
+  </nav>
+
+  <section class="pc-hero">
+    <div>
+      <h1>💰 Citas e ingresos</h1>
+      <p>
+        {{ esAdmin()
+          ? 'Citas, asistencia e ingresos de todas las psicólogas.'
+          : 'Tus citas de la semana, cómo va la asistencia y tus ingresos.' }}
+      </p>
+    </div>
+    <button type="button" class="pc-pdf" [disabled]="!datos()" (click)="descargarPdf()">📄 Descargar PDF</button>
+  </section>
+
+  <div class="pc-periodos">
+    @for (p of periodos; track p.valor) {
+      <button type="button" [class.sel]="periodo() === p.valor" (click)="cambiarPeriodo(p.valor)">{{ p.nombre }}</button>
+    }
+    @if (datos(); as d) {
+      <span class="pc-rango">{{ fecha(d.desde) }} – {{ fecha(d.hasta) }}</span>
+    }
+    @if (cargando() && datos()) {
+      <span class="pc-rango">Actualizando...</span>
+    }
+  </div>
+
+  @if (error()) {
+    <div class="pc-alerta">{{ error() }}</div>
+  }
+
+  @if (!datos() && cargando()) {
+    <p>Cargando...</p>
+  }
+
+  @if (datos(); as d) {
+    @if (d.totalCitas === 0 && d.pendientesRespuesta === 0) {
+      <div class="pc-aviso">
+        No hay citas en este período. Cuando haya citas atendidas, aquí verás cuántas fueron y cuánto se generó.
+      </div>
+    }
+
+    <div class="pc-kpis">
+      <div class="pc-kpi a"><span>📅</span><strong>{{ d.totalCitas }}</strong><small>Citas en el período</small></div>
+      <div class="pc-kpi b"><span>✅</span><strong>{{ d.atendidas }}</strong><small>Atendidas</small></div>
+      <div class="pc-kpi c"><span>💰</span><strong>{{ bs(d.ingresosPeriodo) }}</strong><small>Ingresos del período</small></div>
+      <div class="pc-kpi d"><span>🗓️</span><strong>{{ bs(d.ingresosSemana) }}</strong><small>Ingresos de esta semana</small></div>
+      <div class="pc-kpi e">
+        <span>🎯</span>
+        <strong>{{ d.asistencia === null ? 'Sin datos' : d.asistencia + '%' }}</strong>
+        <small>Asistencia a las citas</small>
+      </div>
+      <div class="pc-kpi f">
+        <span>⏳</span>
+        <strong>{{ d.pendientesRespuesta }}</strong>
+        <small>
+          Esperando respuesta
+          @if (d.urgentesPendientes > 0) {
+            · 🚨 {{ d.urgentesPendientes }} urgente{{ d.urgentesPendientes === 1 ? '' : 's' }}
+          }
+        </small>
+      </div>
+    </div>
+
+    <div class="pc-graficos">
+      <section class="pc-g ancho">
+        <h3>Citas por semana (últimas 8 semanas)</h3>
+        <app-grafico tipo="bar" [etiquetas]="citasSemanales().etiquetas" [series]="citasSemanales().series" />
+      </section>
+      <section class="pc-g ancho">
+        <h3>Ingresos por semana (Bs)</h3>
+        <app-grafico #graficoIngresos tipo="line" [etiquetas]="ingresosSemanales().etiquetas" [series]="ingresosSemanales().series" />
+      </section>
+      <section class="pc-g">
+        <h3>Estado de las citas del período</h3>
+        <app-grafico tipo="doughnut" [etiquetas]="estados().etiquetas" [series]="estados().series" />
+      </section>
+      <section class="pc-g">
+        <h3>Citas por día de la semana</h3>
+        <app-grafico tipo="bar" [etiquetas]="dias().etiquetas" [series]="dias().series" />
+      </section>
+    </div>
+
+    @if (esAdmin()) {
+      <section class="pc-g ancho pc-admin">
+        <h3>👩‍⚕️ Rendimiento por psicóloga</h3>
+        @if (d.porPsicologa.length === 0) {
+          <p class="pc-aviso">Aún no hay psicólogas registradas.</p>
+        } @else {
+          <app-grafico tipo="bar" [etiquetas]="ingresosPsicologas().etiquetas" [series]="ingresosPsicologas().series" />
+          <table class="pc-tabla">
+            <thead>
+              <tr><th>Psicóloga</th><th>Citas</th><th>Atendidas</th><th>Asistencia</th><th>Ingresos</th></tr>
+            </thead>
+            <tbody>
+              @for (p of d.porPsicologa; track p.nombre) {
+                <tr>
+                  <td>{{ p.nombre }}</td>
+                  <td>{{ p.totalCitas }}</td>
+                  <td>{{ p.atendidas }}</td>
+                  <td>{{ p.asistencia === null ? '—' : p.asistencia + '%' }}</td>
+                  <td><strong>{{ bs(p.ingresos) }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+    }
+  }
+</div>

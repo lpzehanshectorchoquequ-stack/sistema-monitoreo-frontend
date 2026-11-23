@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { EstadisticasCitas } from '../domain/estadistica-citas.model';
 import { Evolucion, Resumen } from '../domain/estadistica.model';
 import { EstadisticaPort } from '../domain/estadistica.port';
 import { API_URL } from './api.config';
@@ -15,5 +16,9 @@ export class EstadisticaHttpAdapter implements EstadisticaPort {
 
   resumen(): Observable<Resumen> {
     return this.http.get<Resumen>(`${API_URL}/estadisticas/resumen`);
+  }
+
+  citas(periodo: string): Observable<EstadisticasCitas> {
+    return this.http.get<EstadisticasCitas>(`${API_URL}/estadisticas/citas?periodo=${periodo}`);
   }
 }

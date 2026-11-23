@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { EstadisticasCitas } from '../domain/estadistica-citas.model';
 import { Evolucion, Resumen } from '../domain/estadistica.model';
 import { EstadisticaPort } from '../domain/estadistica.port';
 
@@ -13,5 +14,9 @@ export class ConsultarEstadisticasUseCase {
 
   resumen(): Observable<Resumen> {
     return this.puerto.resumen();
+  }
+
+  citas(periodo: string): Observable<EstadisticasCitas> {
+    return this.puerto.citas(periodo);
   }
 }

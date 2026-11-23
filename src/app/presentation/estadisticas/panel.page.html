@@ -1,6 +1,11 @@
 <div class="pm-panel">
   <app-boton-atras />
 
+  <nav class="tabs-est">
+    <a routerLink="/estadisticas" routerLinkActive="sel" [routerLinkActiveOptions]="{ exact: true }">🧒 Pacientes y evaluaciones</a>
+    <a routerLink="/estadisticas/citas" routerLinkActive="sel">📅 Citas e ingresos</a>
+  </nav>
+
   <section class="pm-cab">
     <h1>📊 {{ esAdmin() ? 'Estadísticas generales' : 'Mis estadísticas' }}</h1>
     <p>Un resumen visual de los pacientes y las evaluaciones{{ esAdmin() ? ' de todas las psicólogas' : '' }}.</p>

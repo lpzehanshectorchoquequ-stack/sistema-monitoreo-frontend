@@ -103,6 +103,12 @@ export const routes: Routes = [
           import('./presentation/estadisticas/panel.page').then((m) => m.PanelEstadisticasPage),
       },
       {
+        path: 'estadisticas/citas',
+        canActivate: [rolGuard(['Psicologo', 'Admin'])],
+        loadComponent: () =>
+          import('./presentation/estadisticas/panel-citas.page').then((m) => m.PanelCitasPage),
+      },
+      {
         path: 'evolucion/:id',
         loadComponent: () =>
           import('./presentation/estadisticas/evolucion.page').then((m) => m.EvolucionPage),

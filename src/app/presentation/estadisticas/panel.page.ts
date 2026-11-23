@@ -4,6 +4,7 @@ import { SessionStore } from '../../application/session.store';
 import { Conteo, ETIQUETA_NIVEL, Resumen } from '../../domain/estadistica.model';
 import { BotonAtrasComponent } from '../shared/boton-atras.component';
 import { GraficoComponent, SerieGrafico } from '../shared/grafico.component';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 const ETIQUETA_GENERO: Record<string, string> = { NINO: 'Niños', NINA: 'Niñas', SIN_DATO: 'Sin dato' };
 const ETIQUETA_AREA: Record<string, string> = { TDAH: 'TDAH', TEA: 'TEA', APRENDIZAJE: 'Aprendizaje', OTRA: 'Otra' };
@@ -26,7 +27,7 @@ function mesCorto(etiqueta: string): string {
 
 @Component({
   selector: 'app-panel-estadisticas',
-  imports: [BotonAtrasComponent, GraficoComponent],
+  imports: [BotonAtrasComponent, GraficoComponent, RouterLink, RouterLinkActive],
   templateUrl: './panel.page.html',
   styleUrl: './panel.page.scss',
 })
