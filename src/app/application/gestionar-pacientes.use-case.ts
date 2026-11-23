@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HijoDatos, Paciente, PacienteDatos, Psicologo, Tutor } from '../domain/paciente.model';
+import { HijoDatos, Paciente, PacienteDatos, Psicologo, Tutor, TutorVinculado } from '../domain/paciente.model';
 import { PacientePort } from '../domain/paciente.port';
 
 @Injectable({ providedIn: 'root' })
@@ -35,11 +35,23 @@ export class GestionarPacientesUseCase {
     return this.puerto.tutores();
   }
 
-    registrarHijo(datos: HijoDatos): Observable<Paciente> {
+  registrarHijo(datos: HijoDatos): Observable<Paciente> {
     return this.puerto.registrarHijo(datos);
   }
 
   psicologos(): Observable<Psicologo[]> {
     return this.puerto.psicologos();
+  }
+
+  tutoresDe(pacienteId: number): Observable<TutorVinculado[]> {
+    return this.puerto.tutoresDe(pacienteId);
+  }
+
+  vincularTutor(pacienteId: number, tutorId: number, parentesco: string): Observable<TutorVinculado[]> {
+    return this.puerto.vincularTutor(pacienteId, tutorId, parentesco);
+  }
+
+  desvincularTutor(pacienteId: number, tutorId: number): Observable<TutorVinculado[]> {
+    return this.puerto.desvincularTutor(pacienteId, tutorId);
   }
 }

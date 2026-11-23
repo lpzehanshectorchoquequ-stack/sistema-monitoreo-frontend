@@ -13,10 +13,18 @@ import {
   rangoFechaNacimiento,
   textoValido,
 } from '../shared/validadores';
+import { TutoresPacienteComponent } from './tutores-paciente.component';
 
 @Component({
   selector: 'app-paciente-form',
-  imports: [ReactiveFormsModule, RouterLink, BotonAtrasComponent, ErrorCampoComponent, FiltroEntradaDirective],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    BotonAtrasComponent,
+    ErrorCampoComponent,
+    FiltroEntradaDirective,
+    TutoresPacienteComponent,
+  ],
   templateUrl: './paciente-form.page.html',
 })
 export class PacienteFormPage implements OnInit {

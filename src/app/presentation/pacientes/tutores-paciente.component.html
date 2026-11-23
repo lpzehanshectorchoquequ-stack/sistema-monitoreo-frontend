@@ -1,0 +1,64 @@
+<section class="tp">
+  <h3>👨‍👩‍👧 Tutores de este niño o niña</h3>
+  <p class="tp-ayuda">
+    Si lo llevan distintas personas, vincula a cada una. Todos los tutores vinculados lo ven en su cuenta
+    y pueden responder sus evaluaciones.
+  </p>
+
+  @if (error()) {
+    <div class="tp-alerta">{{ error() }}</div>
+  }
+  @if (exito()) {
+    <div class="tp-exito">✓ {{ exito() }}</div>
+  }
+
+  <ul class="tp-lista">
+    @for (t of vinculados(); track t.tutorId) {
+      <li>
+        <span class="tp-avatar">{{ iniciales(t.nombre) }}</span>
+        <div class="tp-datos">
+          <strong>{{ t.nombre }}</strong>
+          <small>{{ t.correo }}</small>
+        </div>
+        <span class="tp-chip" [class.principal]="t.principal">{{ t.parentesco }}</span>
+        @if (!t.principal) {
+          <button type="button" class="tp-quitar" title="Quitar tutor" (click)="quitar(t)">✕</button>
+        }
+      </li>
+    }
+  </ul>
+
+  <div class="tp-nuevo">
+    <h4>➕ Agregar otro tutor</h4>
+    @if (disponibles().length === 0) {
+      <p class="tp-ayuda">
+        No hay otras cuentas de tutor disponibles.
+        Crea una en <a routerLink="/usuarios">Mis tutores</a> y vuelve aquí para vincularla.
+      </p>
+    } @else {
+      <div class="tp-campos">
+        <label>
+          Tutor
+          <select [value]="tutorElegido()" (change)="tutorElegido.set(+$any($event.target).value)">
+            <option value="0">Elige una cuenta</option>
+            @for (c of disponibles(); track c.id) {
+              <option [value]="c.id">{{ c.nombre }} ({{ c.correo }})</option>
+            }
+          </select>
+        </label>
+        <label>
+          Parentesco
+          <select [value]="parentescoElegido()" (change)="parentescoElegido.set($any($event.target).value)">
+            <option value="">Elige una opción</option>
+            @for (p of parentescos; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      <button type="button" class="tp-agregar" [disabled]="!puedeAgregar() || guardando()" (click)="agregar()">
+        {{ guardando() ? 'Vinculando...' : 'Vincular tutor' }}
+      </button>
+    }
+  </div>
+</section>

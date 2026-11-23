@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HijoDatos, Paciente, PacienteDatos, Psicologo, Tutor } from '../domain/paciente.model';
+import { HijoDatos, Paciente, PacienteDatos, Psicologo, Tutor, TutorVinculado } from '../domain/paciente.model';
 import { PacientePort } from '../domain/paciente.port';
 import { API_URL } from './api.config';
 
@@ -38,11 +38,23 @@ export class PacienteHttpAdapter implements PacientePort {
     return this.http.get<Tutor[]>(`${this.url}/tutores`);
   }
 
-    registrarHijo(datos: HijoDatos): Observable<Paciente> {
+  registrarHijo(datos: HijoDatos): Observable<Paciente> {
     return this.http.post<Paciente>(`${this.url}/mis-hijos`, datos);
   }
 
-    psicologos(): Observable<Psicologo[]> {
+  psicologos(): Observable<Psicologo[]> {
     return this.http.get<Psicologo[]>(`${this.url}/psicologos`);
+  }
+
+  tutoresDe(pacienteId: number): Observable<TutorVinculado[]> {
+    return this.http.get<TutorVinculado[]>(`${this.url}/${pacienteId}/tutores`);
+  }
+
+  vincularTutor(pacienteId: number, tutorId: number, parentesco: string): Observable<TutorVinculado[]> {
+    return this.http.post<TutorVinculado[]>(`${this.url}/${pacienteId}/tutores`, { tutorId, parentesco });
+  }
+
+  desvincularTutor(pacienteId: number, tutorId: number): Observable<TutorVinculado[]> {
+    return this.http.delete<TutorVinculado[]>(`${this.url}/${pacienteId}/tutores/${tutorId}`);
   }
 }

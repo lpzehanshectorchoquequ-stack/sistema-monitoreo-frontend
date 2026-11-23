@@ -64,4 +64,8 @@
       </button>
     </div>
   </form>
+
+  @if (id() !== null) {
+    <app-tutores-paciente [pacienteId]="id()!" />
+  }
 </div>

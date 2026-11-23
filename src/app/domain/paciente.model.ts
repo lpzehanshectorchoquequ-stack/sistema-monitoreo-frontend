@@ -52,3 +52,13 @@ export function calcularEdad(fechaNacimiento: string): number {
   }
   return edad;
 }
+
+export interface TutorVinculado {
+  tutorId: number;
+  nombre: string;
+  correo: string;
+  parentesco: string;
+  principal: boolean;
+}
+
+export const PARENTESCOS = ['Madre', 'Padre', 'Abuelo/a', 'Tío/a', 'Hermano/a mayor', 'Otro'];

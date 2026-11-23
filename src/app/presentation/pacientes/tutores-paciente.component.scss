@@ -1,0 +1,155 @@
+:host {
+  display: block;
+}
+
+.tp {
+  padding: 1.5rem;
+  margin-top: 1.2rem;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+
+  h3 {
+    margin: 0 0 0.3rem;
+    color: var(--c-primario-osc);
+  }
+
+  h4 {
+    margin: 1.2rem 0 0.6rem;
+  }
+}
+
+.tp-ayuda {
+  margin: 0.2rem 0 0.8rem;
+  color: var(--c-suave);
+}
+
+.tp-alerta,
+.tp-exito {
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  border-radius: 14px;
+}
+
+.tp-alerta {
+  color: #b71c1c;
+  background: #ffe3e6;
+}
+
+.tp-exito {
+  color: #1b5e20;
+  background: #d7f7e2;
+}
+
+.tp-lista {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+}
+
+.tp-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--c-primario);
+  border-radius: 50%;
+}
+
+.tp-datos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+
+  small {
+    color: var(--c-suave);
+    overflow-wrap: anywhere;
+  }
+}
+
+.tp-chip {
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--c-primario-osc);
+  background: var(--c-claro);
+  border-radius: 999px;
+
+  &.principal {
+    color: #fff;
+    background: var(--c-primario);
+  }
+}
+
+.tp-quitar {
+  padding: 0.4rem 0.7rem;
+  font-weight: 800;
+  color: #9a1b1b;
+  background: #ffe3e6;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tp-nuevo {
+  padding: 1.1rem;
+  margin-top: 1rem;
+  background: var(--c-fondo);
+  border-radius: 18px;
+
+  h4 {
+    margin-top: 0;
+  }
+}
+
+.tp-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-weight: 800;
+  }
+
+  select {
+    padding: 0.7rem 0.8rem;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 3px solid var(--c-claro);
+    border-radius: 14px;
+  }
+}
+
+.tp-agregar {
+  padding: 0.8rem 1.6rem;
+  margin-top: 0.9rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(120deg, var(--c-primario), var(--c-primario-osc));
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
