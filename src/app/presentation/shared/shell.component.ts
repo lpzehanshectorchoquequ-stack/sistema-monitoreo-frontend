@@ -43,6 +43,7 @@ export class ShellComponent implements OnInit {
           { etiqueta: 'Tests', icono: '📋', ruta: '/tests' },
           { etiqueta: 'Estadísticas', icono: '📊', ruta: '/estadisticas' },
           { etiqueta: 'Citas', icono: '📅', ruta: '/citas' },
+          { etiqueta: 'Bitácora', icono: '📜', ruta: '/bitacora' },
         ];
       case 'Psicologo':
         return [

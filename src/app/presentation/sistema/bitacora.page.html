@@ -1,0 +1,134 @@
+<div class="bt-wrap">
+  <app-boton-atras />
+
+  <section class="bt-hero">
+    <div>
+      <h1>📜 Bitácora del sistema</h1>
+      <p>Registro de quién hizo qué y cuándo. Solo el administrador puede verla y nadie puede borrarla.</p>
+    </div>
+    <div class="bt-hero-acciones">
+      <button type="button" class="bt-btn claro" (click)="actualizar()">🔄 Actualizar</button>
+      <button type="button" class="bt-btn blanco" [disabled]="(pagina()?.total ?? 0) === 0" (click)="exportarCsv()">
+        📥 Exportar CSV
+      </button>
+    </div>
+  </section>
+
+  @if (error()) {
+    <div class="bt-alerta">{{ error() }}</div>
+  }
+
+  @if (resumen(); as r) {
+    <div class="bt-kpis">
+      <div class="bt-kpi a"><span>📝</span><strong>{{ r.registrosHoy }}</strong><small>Acciones registradas hoy</small></div>
+      <div class="bt-kpi b"><span>👥</span><strong>{{ r.usuariosActivosHoy }}</strong><small>Usuarios activos hoy</small></div>
+      <div class="bt-kpi c"><span>🚫</span><strong>{{ r.sesionesFallidasUltimas24h }}</strong><small>Inicios de sesión fallidos (24 h)</small></div>
+      <div class="bt-kpi d"><span>⚠️</span><strong>{{ r.erroresUltimas24h }}</strong><small>Acciones con error (24 h)</small></div>
+    </div>
+  }
+
+  <section class="bt-filtros">
+    <label class="bt-buscar">
+      🔍
+      <input type="search" appFiltro="texto" maxlength="100" [value]="texto()"
+             placeholder="Buscar por usuario o por acción..." (input)="alEscribir($any($event.target).value)" />
+    </label>
+    <label>
+      Módulo
+      <select (change)="modulo.set($any($event.target).value); filtrar()">
+        <option value="" [selected]="modulo() === ''">Todos</option>
+        @for (m of modulos; track m) {
+          <option [value]="m" [selected]="modulo() === m">{{ m }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Resultado
+      <select (change)="resultado.set($any($event.target).value); filtrar()">
+        <option value="" [selected]="resultado() === ''">Todos</option>
+        <option value="EXITO" [selected]="resultado() === 'EXITO'">Exitosos</option>
+        <option value="ERROR" [selected]="resultado() === 'ERROR'">Con error</option>
+      </select>
+    </label>
+    <label>
+      Desde
+      <input type="date" [value]="desde()" (change)="desde.set($any($event.target).value); filtrar()" />
+    </label>
+    <label>
+      Hasta
+      <input type="date" [value]="hasta()" (change)="hasta.set($any($event.target).value); filtrar()" />
+    </label>
+    @if (hayFiltros()) {
+      <button type="button" class="bt-limpiar" (click)="limpiar()">Quitar filtros</button>
+    }
+  </section>
+
+  @if (cargando() && !pagina()) {
+    <p>Cargando...</p>
+  }
+
+  @if (pagina(); as p) {
+    @if (p.total === 0) {
+      <div class="bt-vacio">
+        <div class="bt-vacio-emoji">🔎</div>
+        <p>No hay registros con esos filtros.</p>
+      </div>
+    } @else {
+      <div class="bt-tarjeta">
+        <table class="bt-tabla">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Usuario</th>
+              <th>Módulo</th>
+              <th>Qué hizo</th>
+              <th>Resultado</th>
+              <th>IP</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of p.items; track r.id) {
+              <tr [class.con-error]="r.resultado === 'ERROR'">
+                <td class="nowrap">{{ fecha(r.fechaHora) }}</td>
+                <td>
+                  <strong>{{ nombreUsuario(r.usuario) }}</strong>
+                  @if (r.rol) {
+                    <small>{{ r.rol }}</small>
+                  }
+                </td>
+                <td><span class="bt-modulo">{{ r.modulo }}</span></td>
+                <td>{{ icono(r.accion) }} {{ r.descripcion }}</td>
+                <td>
+                  <span class="bt-res" [class.ok]="r.resultado === 'EXITO'" [class.mal]="r.resultado === 'ERROR'">
+                    {{ r.resultado === 'EXITO' ? '✓ Exitoso' : '✕ Error' }}
+                    @if (r.estadoHttp) {
+                      <small>({{ r.estadoHttp }})</small>
+                    }
+                  </span>
+                </td>
+                <td class="nowrap">{{ r.ip }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bt-pie">
+        <span>Página {{ p.pagina + 1 }} de {{ p.totalPaginas }} · {{ p.total }} registros</span>
+        <div class="bt-nav">
+          <button type="button" class="bt-btn claro" [disabled]="p.pagina === 0" (click)="irA(0)">« Primera</button>
+          <button type="button" class="bt-btn claro" [disabled]="p.pagina === 0" (click)="irA(p.pagina - 1)">‹ Anterior</button>
+          <button type="button" class="bt-btn claro" [disabled]="p.pagina + 1 >= p.totalPaginas" (click)="irA(p.pagina + 1)">Siguiente ›</button>
+        </div>
+        <label>
+          Mostrar
+          <select (change)="cambiarTamano(+$any($event.target).value)">
+            @for (t of tamanos; track t) {
+              <option [value]="t" [selected]="tamano() === t">{{ t }}</option>
+            }
+          </select>
+        </label>
+      </div>
+    }
+  }
+</div>
